@@ -1,0 +1,112 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MQ²</title>
+    
+    <link rel="stylesheet" type="text/css" 
+        href="http://flask.pocoo.org/docs/_static/flasky.css" />
+    <link rel="stylesheet" type="text/css" 
+        href="http://flask.pocoo.org/docs/_static/pygments.css" />
+  </head>
+  <body>
+    <div class="document">
+      <div class="section" id="intro">
+        <span id="id1"></span>
+        <h1>MQ²<a class="headerlink" href="#intro"
+            title="Permalink to this headline">¶</a></h1>
+        <p>
+          This tool allows you to easily investigate the presence of
+          potential QTL hotspot in MapQTL data.
+        </p>
+        <p> MapQTL is a powerful tool to do QTL mapping. It allows you
+          to do multiple traits very quickly and in a user-friendly way.
+          However, if you perform QTL mapping on a lot of traits, it is
+          hard to get an overview of the results.
+        </p>
+        <p>
+          MQ² aims at filling this need. It will check all the traits you
+          provide, find all the LOD value above the threshold you specify
+          and make the assumption for only one QTL per linkage group.
+        </p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        {% if form.errors %}
+        <ul class=errors>
+        {% for error in form.errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        <h4> Upload your files: </h4>
+        <form method="POST" action="." enctype="multipart/form-data">
+          <ul style="list-style-type: none;">
+            <li>
+              {{ form.mapqtl_input.label }} {{ form.mapqtl_input }}
+            </li>
+            <li>
+              {{ form.map_input.label }} {{ form.map_input }}
+            </li>
+            <li>
+              <input type="submit" value="Submit">
+            </li>
+          </ul>
+        </form>
+
+        <h4> Checkout your former session: </h4>
+        <form method="POST" action="." >
+          <ul style="list-style-type: none;">
+            <li>
+              {{ session_form.session_id.label }} {{ session_form.session_id }}
+            </li>
+            <li>
+              <input type="submit" value="Submit">
+            </li>
+          </ul>
+        </form>
+
+        <h4> Examples: </h4>
+        <p> Example input files:
+        </p>
+        <ul>
+          <li><a href="#">Example MapQTL output</a></li>
+          <li><a href="#">Example JoinMap map</a></li>
+        </ul>
+        <p> Example output:
+        </p>
+        <ul>
+          <li><a href="{{url_for('session', 
+            session_id='201206231050301272885O2OB1LX7L7CQDQ')}}">
+            Example session</a></li>
+        </ul>
+        <h4> About the name: </h4>
+        <p> The aim of this tool is to visualize QTLs detected using
+          MapQTL. <br />
+          So, it is MapQTL to QTLs, <br />
+          <span style="font-style:italic"> QTL * QTL = QTL²</span> <br />
+          thus MQ².
+        </p>
+        <h4> About the tool: </h4>
+        <p> This tool has been developed by Pierre-Yves Chibon from 
+          <a href="#">Plant Breeding</a> at <a href="#">Wageningen UR</a>,
+          with the help of Roeland Vorrips and Richard Finkers for 
+          advices and testing.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

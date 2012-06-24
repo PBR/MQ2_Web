@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MQ² session overview</title>
+    
+    <link rel="stylesheet" href="http://flask.pocoo.org/docs/_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="http://flask.pocoo.org/docs/_static/pygments.css" type="text/css" />
+  </head>
+  <body>
+    <div class="document">
+      <div class="section" id="intro">
+        <span id="id1"></span>
+        <h1>MQ² session overview<a class="headerlink" href="#intro"
+            title="Permalink to this headline">¶</a></h1>
+        <p>
+          <a href="{{url_for('index')}}">Home</a>
+        </p>
+        <p> Session identifier: <span style="color:red">
+          {{session_id}}</span></p>
+        <p>
+          Now that you have uploaded your data you can check for QTLs
+          hotspot(s).
+        </p>
+        <p> Since in a MapQTL run you can have multiple sessions using
+        differents parameters to do your QTL mapping, please indicate
+        which session you would like to use/look at.
+        </p>
+        <p> MQ² makes the assumption that there is only one QTL per
+          linkage group. In order to find these QTLs we ask you to
+          provide a LOD threshold. All LOD values above it will be
+          considered as part of a QTL.
+        </p>
+
+        <form action="." method="POST" >
+          {{ form.mapqtl_session.label }} {{ form.mapqtl_session }}
+          {{ form.lod_threshold.label }} {{ form.lod_threshold }}
+          <input type="submit" value="Submit">
+        </form>
+
+        {% if exp_ids %}
+        <ul class=exp_ids>
+        {% for exp_id in exp_ids|sort %}
+          <li><a href="{{url_for('results',
+            session_id=session_id, exp_id=exp_id)}}">{{ exp_id }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        <p>
+          The session identifier is the only way for you to find back
+          your session and analyze the files you uploaded. Please write
+          it down and <span style="color:blue">do not lose it!</span>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

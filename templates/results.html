@@ -1,0 +1,131 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MQ² results</title>
+    
+    <link rel="stylesheet" 
+      href="http://flask.pocoo.org/docs/_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" 
+      href="http://flask.pocoo.org/docs/_static/pygments.css" type="text/css" />
+    <script type="text/javascript" 
+      src="{{url_for('static', filename='protovis-d3.1.js')}}"></script>
+    
+  </head>
+  <body>
+    <div class="document">
+      <div class="section" id="intro">
+        <span id="id1"></span>
+        <h1>MQ² results<a class="headerlink" href="#intro"
+            title="Permalink to this headline">¶</a>
+        </h1>
+        <p>
+          <a href="{{url_for('index')}}">Home</a> | 
+          <a href="{{url_for('session', session_id=session_id)}}">
+            Return to session page</a>
+        </p>
+        
+        <p>
+          Results of the analysis ran on {{ date }}
+        </p>
+
+        <h3> Pre-visualisation</h3>
+        <div id="fig">
+        {% if not max_qtls %}
+        <p style="color:red">
+          No QTLs were found for this data or with these parameters
+        </p>
+        {% endif %}
+          <script type="text/javascript+protovis" >
+{% autoescape off%}
+
+var data = {{ qtls_evo }};
+
+var w = 500,
+    h = 300,
+    x = pv.Scale.ordinal(pv.range({{ qtls_evo|length }})).splitBanded(0, w, 4/5),
+    y = pv.Scale.linear(0, {{ max_qtls }}).range(0, 250);
+
+var vis = new pv.Panel()
+    .width(w)
+    .height(250)
+    .bottom(60)
+    .left(30)
+    .right(5)
+    .top(5);
+
+var bar = vis.add(pv.Bar)
+    .data(data)
+    .left(function() x(this.index))
+    .width(x.range().band)
+    .bottom(0)
+    .height(y);
+
+var title = vis.add(pv.Label)
+    .left(250)
+    .top(16)
+    .textAlign("center")
+    .text("Number of QTLs for each marker on the map");
+
+vis.add(pv.Rule)
+    .data(y.ticks())
+    .bottom(function(d) Math.round(y(d)) - .5)
+    .strokeStyle(function(d) d ? "rgba(255,255,255,.3)" : "#000")
+  .add(pv.Rule)
+    .left(0)
+    .width(5)
+    .strokeStyle("#000")
+  .anchor("left").add(pv.Label)
+    .text(function(d) d.toFixed(1));
+
+vis.render();
+{% endautoescape %}
+          </script>
+        </div>
+        <p>
+          The parameters of the experiment were:
+        </p>
+      <table>
+        <tr>
+          <td>LOD Threshold </td>
+          <td>: {{ infos['lod_threshold'] }}</td>
+        </tr>
+        <tr>
+          <td>MapQTL session </td>
+          <td>: {{ infos['mapqtl_session'] }}</td>
+        </tr>
+      </table>
+        <h3> Output files </h3>
+        <ul>
+          <li>
+            <a href="{{url_for('retrieve',
+              session_id=session_id, exp_id=exp_id,
+              filename='qtls.csv')}}">
+              qtls.csv</a> -- List of all the QTLs found in
+              the MapQTL output.
+          </li>
+          <li>
+            <a href="{{url_for('retrieve',
+              session_id=session_id, exp_id=exp_id,
+              filename='qtl_with_mk.csv')}}">
+              qtl_with_mk.csv</a> -- List of all the QTLs found
+              in the MapQTL output with their closest marker on
+              the map.
+          </li>
+          <li>
+            <a href="{{url_for('retrieve',
+              session_id=session_id, exp_id=exp_id,
+              filename='map_with_qtl.csv')}}">
+              map_with_qtl.csv</a> -- Representation of the map in
+              CSV with the number of QTLs found for each marker.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
