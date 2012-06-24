@@ -38,6 +38,25 @@ Deploying this project:
 Instruction to deploy this application is available on the
 `Flask deployment documentation`_ page.
 
+My approach:
+ cd /srv/
+ git clone <repo>
+ sudo vim /etc/httd/conf.d/wsgi.conf
+and put in this file:
+ WSGIScriptAlias /mq2 /var/www/wsgi/mq2.wsgi
+ <Directory /var/www/wsgi/>
+     Order deny,allow
+     Allow from all
+ </Directory>
+Then create the file /var/www/wsgi/mq2.wsgi with:
+ import sys
+ sys.path.insert(0, '/srv/mq2')
+ 
+ import mq2
+ application = mq2.APP
+Then restart apache and you should be able to access the website on 
+http://localhost/mq2
+
 
 License:
 --------
