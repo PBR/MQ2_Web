@@ -103,7 +103,7 @@ def main(folder, qtlfile, mapfile, outputfile='map-with-qtl.csv'):
         qtl_cnt = qtl_cnt + int(markers[-1][-1])
     print '- %s markers processed in %s' % (len(markers), mapfile)
     print '- %s QTLs located in the map: %s' % (qtl_cnt, outputfile)
-    write_down_map('%s/%s' % (folder, outputfile), markers)
+    write_down_map(os.path.join(folder, outputfile), markers)
 
 
 if __name__ == '__main__':

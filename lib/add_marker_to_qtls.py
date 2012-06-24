@@ -110,7 +110,7 @@ def main(folder, qtlfile, mapfile, outputfile='map.csv'):
         qtl.append(add_marker_to_qtl(qtl, map_list))
         qtls.append(qtl)
     print '- %s QTLs processed in %s' % (len(qtls), qtlfile)
-    write_down_qtl_found('%s/%s' % (folder, outputfile), qtls)
+    write_down_qtl_found(os.path.join(folder, outputfile), qtls)
 
 
 if __name__ == '__main__':

@@ -211,7 +211,7 @@ def main(folder, sessionid, zipfile = None, lodthreshold=3,
         matrix = read_input_file(filename)
         qtls.extend(get_qtls_from_mapqtl_data(matrix, lodthreshold, filename))
     print '- %s QTLs found in %s' % (len(qtls), filename)
-    write_down_qtl_found('%s/%s' % (folder, outputfile), qtls)
+    write_down_qtl_found(os.path.join(folder, outputfile), qtls)
     shutil.rmtree(tempfile.gettempdir())
 
 

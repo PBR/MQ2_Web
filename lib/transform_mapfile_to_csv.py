@@ -86,9 +86,9 @@ def main(folder, inputfile, outputfile='map.csv'):
     :kwarg outputfile, the name of the output file in which the map will
     be written.
     """
-    genetic_map = transform_loc_map('%s/%s' % (folder, inputfile))
+    genetic_map = transform_loc_map(os.path.join(folder, inputfile))
     print '- %s markers found in %s' % (len(genetic_map), inputfile)
-    write_down_map('%s/%s' % (folder, outputfile), genetic_map)
+    write_down_map(os.path.join(folder, outputfile), genetic_map)
 
 
 if __name__ == '__main__':
