@@ -20,19 +20,22 @@
         <span id="id1"></span>
         <h1>MQ²<a class="headerlink" href="#intro"
             title="Permalink to this headline">¶</a></h1>
-        <p>
-          This tool allows you to easily investigate the presence of
-          potential QTL hotspot in MapQTL data.
-        </p>
         <p> MapQTL is a powerful tool to do QTL mapping. It allows you
           to do multiple traits very quickly and in a user-friendly way.
           However, if you perform QTL mapping on a lot of traits, it is
           hard to get an overview of the results.
         </p>
         <p>
-          MQ² aims at filling this need. It will check all the traits you
-          provide, find all the LOD value above the threshold you specify
-          and make the assumption for only one QTL per linkage group.
+          MQ² aims at filling this need.
+          Assuming one QTL per linkage group and using the LOD threshold
+          set by the user. It extracts all the QTLs detected by MapQTL,
+          using the JoinMap map file, it finds the closest marker and
+          finally put the number of QTLs found for each marker on the map.
+        </p>
+        <p>
+          This approach quickly allows you to find and visualize
+          potential QTL hotspot in your dataset. This is particularly
+          usefull for large QTL analysis on a large number of traits.
         </p>
 
         {% with messages = get_flashed_messages() %}
