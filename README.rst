@@ -38,9 +38,17 @@ Deploying this project:
 Instruction to deploy this application is available on the
 `Flask deployment documentation`_ page.
 
-My approach:
+My approach.
+Retrieve the sources:
  cd /srv/
  git clone <repo>
+
+Adjust the upload folder at the top of the mq2.py file.
+For example use /var/www/uploads
+ sudo mkdir /var/www/uploads
+ sudo chown apache:apache /var/www/uploads
+
+Then configure apache:
  sudo vim /etc/httd/conf.d/wsgi.conf
 and put in this file:
  WSGIScriptAlias /mq2 /var/www/wsgi/mq2.wsgi
