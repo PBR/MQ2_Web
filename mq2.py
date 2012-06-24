@@ -9,13 +9,9 @@ set a number of parameter and retrieve basic information regarding QTL
 hotspots.
 """
 
-from flask import (Flask, Response, render_template, request, redirect,
-    url_for, flash, send_from_directory)
-from flaskext.wtf import Form, FileField, RecaptchaField
-from werkzeug import secure_filename
-from flaskext.wtf import (Form, FileField, file_allowed, file_required,
-    TextField)
-#from flaskext.uploads import UploadSet, IMAGES
+from flask import (Flask, render_template, request, redirect, url_for,
+    flash, send_from_directory)
+from flaskext.wtf import Form, FileField, file_required, TextField
 
 import ConfigParser
 import datetime
@@ -50,6 +46,9 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 
 class UploadForm(Form):
+    """ Form used to upload the MapQTL output file and the JoinMap map
+    file.
+    """
     mapqtl_input = FileField("MapQTL file",
         validators=[file_required()])
     map_input = FileField("JoinMap file",
@@ -57,10 +56,16 @@ class UploadForm(Form):
 
 
 class SessionForm(Form):
+    """ Form used to specify a session identifier to be able to go back
+    to this specific session.
+    """
     session_id = TextField("Session identifier")
 
 
 class InputForm(Form):
+    """ Form used to specify the arguments needed when extracting the
+    QTLs information from the MapQTL output.
+    """
     lod_threshold = TextField("LOD Threshold")
     mapqtl_session = TextField("MapQTL session")
 
@@ -69,6 +74,9 @@ def allowed_file(input_file):
     """ Validate the uploaded file.
     Checks if its extension and mimetype are within the lists of
     mimetypes and extensions allowed.
+
+    @param input_file a File object uploaded and for which we want to 
+    check that its extension and it mimetype is allowed.
     """
     filename = input_file.filename
     output = '.' in filename and \
@@ -106,11 +114,14 @@ def generate_exp_id():
 
 def get_experiment_ids(session_id):
     """ Retrieve the experiment already run within this session.
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. This is also the name of
+    the folder in which are the different experiment
     """
-    folder = '%s/%s' % (UPLOAD_FOLDER, session_id)
+    folder = os.path.join(UPLOAD_FOLDER, session_id)
     exp_ids = []
     for filename in os.listdir(folder):
-        if os.path.isdir('%s/%s' % (folder, filename)) \
+        if os.path.isdir(os.path.join(folder, filename)) \
             and filename.startswith('20'):
             exp_ids.append(filename)
     return exp_ids
@@ -118,8 +129,13 @@ def get_experiment_ids(session_id):
 
 def retrieve_exp_info(session_id, exp_id):
     """ Retrieve the parameters used in the specified experiment.
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. This is also the name of
+    the folder in which are the different experiment
+    @param exp_id the experiment identifier used to uniquely identify a
+    run which may have specific parameters.
     """
-    folder = '%s/%s/%s' % (UPLOAD_FOLDER, session_id, exp_id)
+    folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     config = ConfigParser.RawConfigParser()
     config.read('%s/exp.cfg' % folder)
     lod_threshold = config.getfloat('Parameters', 'LOD_threshold')
@@ -131,8 +147,13 @@ def retrieve_exp_info(session_id, exp_id):
 def retrieve_qtl_number(session_id, exp_id):
     """ Retrieve the evolution of the number of QTLs per marker in
     the results of the experiment.
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. This is also the name of
+    the folder in which are the different experiment
+    @param exp_id the experiment identifier used to uniquely identify a
+    run which may have specific parameters.
     """
-    folder = '%s/%s/%s' % (UPLOAD_FOLDER, session_id, exp_id)
+    folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     stream = open('%s/map_with_qtl.csv' % folder, 'r')
     qtls_evo = []
     for row in stream.readlines():
@@ -146,14 +167,21 @@ def retrieve_qtl_number(session_id, exp_id):
 
 def run_mq2(session_id, lod_threshold, mapqtl_session):
     """ Run the scripts to extract the QTLs.
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. The session identifier 
+    also uniquely identifies the folder in which are the files uploaded.
+    @param lod_threshold the LOD threshold to use to consider a value
+    significant for a QTL.
+    @param mapqtl_session the MapQTL session/run from which to retrieve
+    the QTLs.
     """
-    folder = '%s/%s' % (UPLOAD_FOLDER, session_id)
+    folder = os.path.join(UPLOAD_FOLDER, session_id)
     exp_id = generate_exp_id()
-    exp_folder = '%s/%s/' % (folder, exp_id)
+    exp_folder = os.path.join(folder, exp_id)
     if not os.path.exists(exp_folder):
         os.mkdir(exp_folder)
 
-    write_down_config('%s/%s' % (folder, exp_id),
+    write_down_config(os.path.join(folder, exp_id),
         lod_threshold,
         mapqtl_session)
 
@@ -163,30 +191,35 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
 
     parse_mapqtl_file(folder=folder,
         sessionid=mapqtl_session,
-        zipfile='%s/input.zip'% (folder),
+        zipfile=os.path.join(folder, 'input.zip'),
         lodthreshold=lod_threshold,
-        outputfile='%s/qtls.csv' % (exp_id))
+        outputfile=os.path.join(exp_id, 'qtls.csv'))
 
     add_marker_to_qtls(folder,
-        qtlfile='%s/qtls.csv' % (exp_folder),
-        mapfile='%s/map.csv' % (folder),
-        outputfile='%s/qtl_with_mk.csv' % (exp_id))
+        qtlfile=os.path.join(exp_folder, 'qtls.csv'),
+        mapfile=os.path.join(folder, 'map.csv'),
+        outputfile=os.path.join(exp_id, 'qtl_with_mk.csv'))
 
     add_qtl_to_map(folder,
-        qtlfile='%s/qtl_with_mk.csv' % (exp_folder),
-        mapfile='%s/map.csv' % (folder),
-        outputfile='%s/map_with_qtl.csv' % (exp_id))
+        qtlfile=os.path.join(exp_folder, 'qtl_with_mk.csv'),
+        mapfile=os.path.join(folder, 'map.csv'),
+        outputfile=os.path.join(exp_id, 'map_with_qtl.csv'))
 
 
 def write_down_config(folder, lod_threshold, mapqtl_session):
     """ Write down the configuration used in an experiment.
+    @param folder the folder in which to write down this configuration.
+    @param lod_threshold the LOD threshold to use to consider a value
+    significant for a QTL.
+    @param mapqtl_session the MapQTL session/run from which to retrieve
+    the QTLs.
     """
     config = ConfigParser.RawConfigParser()
     config.add_section('Parameters')
     config.set('Parameters', 'LOD_threshold', lod_threshold)
     config.set('Parameters', 'MapQTL_session', mapqtl_session)
 
-    with open('%s/exp.cfg' % folder, 'wb') as configfile:
+    with open(os.path.join(folder, 'exp.cfg'), 'wb') as configfile:
         config.write(configfile)
 
 ##  Web-app
@@ -195,9 +228,8 @@ def write_down_config(folder, lod_threshold, mapqtl_session):
 @APP.route('/', methods=['GET', 'POST'])
 def index():
     """ Shows the front page.
-    All the content of this page is in the index.html file under the
-    templates directory. The file is full html and with the form for the
-    upload and the setting of the parameters.
+    Fill the index.html template with the correct form to allow the user
+    to upload his file and find back his session.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
@@ -212,9 +244,8 @@ def index():
         map_file = request.files['map_input']
         if upload_file and allowed_file(upload_file)\
             and map_file:
-            filename = secure_filename(upload_file.filename)
             session_id = generate_session_id()
-            upload_folder = '%s/%s' %(UPLOAD_FOLDER , session_id)
+            upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
             os.mkdir(upload_folder)
             upload_file.save(os.path.join(upload_folder,
                 'input.zip'))
@@ -229,6 +260,15 @@ def index():
 
 @APP.route('/session/<session_id>/', methods=['GET', 'POST'])
 def session(session_id):
+    """ Shows the session page.
+    This page shows the different experiments ran on this session.
+    A session being a MapQTL output zip file and a JoinMap map file,
+    experiments are defined by the parameters used to find the QTLs
+    within this MapQTL output.
+
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file.
+    """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
     form = InputForm(csrf_enabled=False)
@@ -247,12 +287,22 @@ def session(session_id):
 
 @APP.route('/session/<session_id>/<exp_id>/')
 def results(session_id, exp_id):
+    """ Show the result page of an experiment.
+    This page gives a quick overview of the QTL density along the map as
+    well as the information about the parameters used for this
+    experiment and access to the output files generated by our tool.
+
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file.
+    @param exp_id the experiment identifier used to uniquely identify a
+    run which may have specific parameters.
+    """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
-    folder = '%s/%s' % (UPLOAD_FOLDER, session_id)
+    folder = os.path.join(UPLOAD_FOLDER, session_id)
     if not exp_id in os.listdir(folder):
         flash('This experiment does not exists')
         return redirect(url_for('session', session_id=session_id))
@@ -262,7 +312,7 @@ def results(session_id, exp_id):
     max_qtls = 0
     if qtls_evo:
         max_qtls = max(qtls_evo) + 2
-    date = '%s-%s-%s at %s:%s:%s' %(exp_id[:4], exp_id[4:6], exp_id[6:8],
+    date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
         exp_id[8:10], exp_id[10:12], exp_id[12:14])
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id, infos=infos, date=date,
@@ -271,9 +321,19 @@ def results(session_id, exp_id):
 
 @APP.route('/retrieve/<session_id>/<exp_id>/<filename>')
 def retrieve(session_id, exp_id, filename):
+    """ Retrieve the output file of an experiment.
+    This method just returns you the direct file generated by our tool
+    for a given experiment in a given session.
+
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file.
+    @param exp_id the experiment identifier used to uniquely identify a
+    run which may have specific parameters.
+    @param filename the name of the file to retrieve within this session.
+    """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
-    upload_folder = '%s/%s/%s/' % (UPLOAD_FOLDER, session_id, exp_id)
+    upload_folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     return send_from_directory(upload_folder, filename)
 
 
