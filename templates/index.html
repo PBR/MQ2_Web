@@ -56,7 +56,7 @@
         </ul>
         {% endif %}
         <h4> Upload your files: </h4>
-        <form method="POST" action="." enctype="multipart/form-data">
+        <form method="POST" action="" enctype="multipart/form-data">
           <ul style="list-style-type: none;">
             <li>
               {{ form.mapqtl_input.label }} {{ form.mapqtl_input }}
@@ -71,7 +71,7 @@
         </form>
 
         <h4> Checkout your former session: </h4>
-        <form method="POST" action="." >
+        <form method="POST" action="" >
           <ul style="list-style-type: none;">
             <li>
               {{ session_form.session_id.label }} {{ session_form.session_id }}
