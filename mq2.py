@@ -235,9 +235,8 @@ def index():
         request.remote_addr, request.url)
     form = UploadForm(csrf_enabled=False)
     session_form = SessionForm(csrf_enabled=False)
-    if session_form.validate_on_submit():
-        session_id = session_form.session_id.data
-        return redirect(url_for('session', session_id=session_id))
+    if session_form.validate_on_submit()and session_form.session_id.data:
+        return redirect(url_for('session', session_id=session_form.session_id.data))
     if form.validate_on_submit():
         print "youhou!"
         upload_file = request.files['mapqtl_input']
