@@ -31,7 +31,7 @@ UPLOAD_FOLDER = './uploads'
 # Extension allowed for file to upload
 ALLOWED_EXTENSIONS = set(['zip'])
 # Mimetype allowed for file to upload
-ALLOWED_MIMETYPES = set(['application/zip'])
+ALLOWED_MIMETYPES = set(['application/zip', 'application/octet-stream'])
 
 # Turn on or off the debugging mode (turn on only for development).
 DEBUG = True
@@ -238,7 +238,6 @@ def index():
     if session_form.validate_on_submit()and session_form.session_id.data:
         return redirect(url_for('session', session_id=session_form.session_id.data))
     if form.validate_on_submit():
-        print "youhou!"
         upload_file = request.files['mapqtl_input']
         map_file = request.files['map_input']
         if upload_file and allowed_file(upload_file)\
