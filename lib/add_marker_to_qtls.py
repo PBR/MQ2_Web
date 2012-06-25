@@ -25,6 +25,9 @@ write_down_qtl_found('%s/%s' % (folder, outputfile), qtls)
 """
 
 
+import os
+
+
 def read_input_file(filename, sep='\t'):
     """Reads a given inputfile (tab delimited) and returns a matrix
     (list of list).

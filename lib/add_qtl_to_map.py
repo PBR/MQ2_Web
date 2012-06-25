@@ -25,6 +25,9 @@
 """
 
 
+import os
+
+
 def read_input_file(filename, sep='\t'):
     """Reads a given inputfile (tab delimited) and returns a matrix
     (list of list).

@@ -25,6 +25,9 @@
 """
 
 
+import os
+
+
 def transform_loc_map(inputfile):
     """Transform the loc map into a CSV file.
     :arg inputfile, the name of the inputfile containing the map to
