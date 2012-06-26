@@ -42,9 +42,13 @@ My approach.
 Retrieve the sources:
  cd /srv/
  git clone <repo>
+ cd mq2
 
-Adjust the upload folder at the top of the mq2.py file.
-For example use /var/www/uploads
+Copy the configuration file
+ cp mq2.cfg.sample mq2.cfg
+
+Adjust the configuration file (upload folder, secret key...)
+For example use for the upload /var/www/uploads:
  sudo mkdir /var/www/uploads
  sudo chown apache:apache /var/www/uploads
 
