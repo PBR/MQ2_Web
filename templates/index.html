@@ -21,16 +21,18 @@
         <h1>MQ²<a class="headerlink" href="#intro"
             title="Permalink to this headline">¶</a></h1>
         <p> MapQTL is a powerful tool to do QTL mapping. It allows you
-          to do multiple traits very quickly and in a user-friendly way.
+          to analyze multiple traits very quickly and in a user-friendly way.
           However, if you perform QTL mapping on a lot of traits, it is
           hard to get an overview of the results.
         </p>
         <p>
           MQ² aims at filling this need.
           Assuming one QTL per linkage group and using the LOD threshold
-          set by the user. It extracts all the QTLs detected by MapQTL,
-          using the JoinMap map file, it finds the closest marker and
-          finally put the number of QTLs found for each marker on the map.
+          set by the user. It extracts all the QTLs detected by MapQTL
+          and using a map file, it finds the marker closest to the peak
+          and finally calculates the number of QTLs found near each
+          marker on the map. Note that this works for Inbterval mapping
+          and MQM or RQM mapping, not for KW mapping.
         </p>
         <p>
           This approach quickly allows you to find and visualize
