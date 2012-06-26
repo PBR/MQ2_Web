@@ -143,6 +143,26 @@ def allowed_file(input_file):
     return output
 
 
+def experiment_done(session_id, lod_threshold, mapqtl_session):
+    """ Check within a session if there is not already an existing
+    experiment which used the same parameters.
+
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. The session identifier
+    also uniquely identifies the folder in which are the files uploaded.
+    @param lod_threshold the LOD threshold to use to consider a value
+    significant for a QTL.
+    @param mapqtl_session the MapQTL session/run from which to retrieve
+    the QTLs.
+    """
+    for exp in get_experiment_ids(session_id):
+        infos = retrieve_exp_info(session_id, exp)
+        if infos['mapqtl_session'] == int(mapqtl_session) and
+            infos['lod_threshold'] == float(lod_threshold):
+            return exp
+    return False
+
+
 def generate_exp_id():
     """ Generate an experiment id using time.
     """
@@ -238,6 +258,9 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
     the QTLs.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id)
+    already_done = experiment_done(session_id, lod_threshold, mapqtl_session)
+    if already_done is not False:
+        return already_done
     exp_id = generate_exp_id()
     exp_folder = os.path.join(folder, exp_id)
     if not os.path.exists(exp_folder):
@@ -340,7 +363,9 @@ def session(session_id):
     if form.validate_on_submit():
         lod_threshold = form.lod_threshold.data
         mapqtl_session = form.mapqtl_session.data
-        run_mq2(session_id, lod_threshold, mapqtl_session)
+        output = run_mq2(session_id, lod_threshold, mapqtl_session)
+        if output:
+            flash("Experiment already run in experiment: %s" % output)
     exp_ids = get_experiment_ids(session_id)
     return render_template('session.html', session_id=session_id,
         form=form, exp_ids=exp_ids)
