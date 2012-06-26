@@ -31,7 +31,6 @@ from lib.add_qtl_to_map import main as add_qtl_to_map
 CONFIG = ConfigParser.ConfigParser()
 CONFIG.readfp(open(os.path.join(os.path.dirname(os.path.abspath( __file__ )),
     'mq2.cfg')))
-CONFIG.read(['/etc/mq2.cfg'])
 # folder where the files can be uploaded
 UPLOAD_FOLDER = CONFIG.get('mq2', 'upload_folder')
 # Extension allowed for file to upload
