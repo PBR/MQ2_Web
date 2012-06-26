@@ -37,6 +37,13 @@
           considered as part of a QTL.
         </p>
 
+        {% if form.errors %}
+        <ul class=errors>
+          {% for error in form.errors %}
+            <li>{{ error }} : {{ form.errors[error]|join(" ") }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
         <form action="." method="POST" >
           {{ form.mapqtl_session.label }} {{ form.mapqtl_session }}
           {{ form.lod_threshold.label }} {{ form.lod_threshold }}
