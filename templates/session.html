@@ -37,6 +37,16 @@
           considered as part of a QTL.
         </p>
 
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
         {% if form.errors %}
         <ul class=errors>
           {% for error in form.errors %}
