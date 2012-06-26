@@ -9,10 +9,37 @@
     
     <title>MQ²</title>
     
-    <link rel="stylesheet" type="text/css" 
+    <link rel="stylesheet" type="text/css"
         href="http://flask.pocoo.org/docs/_static/flasky.css" />
-    <link rel="stylesheet" type="text/css" 
+    <link rel="stylesheet" type="text/css"
         href="http://flask.pocoo.org/docs/_static/pygments.css" />
+    <script type="text/javascript"
+      src="{{url_for('static', filename='jquery-ui-1.8.21.custom.min.js')}}"></script>
+    <script type="text/javascript"
+      src="{{url_for('static', filename='jquery-1.7.2.min.js')}}"></script>
+    <script type="text/javascript">
+      $(function() {
+        // Help for the Map file
+        function runEffectMap() {
+          $( "#helpMap" ).toggle( "blind", "", 500);
+        };
+        $( "#toogleHelpMap" ).click(function() {
+          runEffectMap();
+          return false;
+        });
+        $( "#helpMap" ).hide();
+
+        // Help for the zip file
+        function runEffectZip() {
+          $( "#helpZip" ).toggle( "blind", "", 500);
+        };
+        $( "#toogleHelpZip" ).click(function() {
+          runEffectZip();
+          return false;
+        });
+        $( "#helpZip" ).hide();
+      });
+    </script>
   </head>
   <body>
     <div class="document">
@@ -62,15 +89,33 @@
           <ul style="list-style-type: none;">
             <li>
               {{ form.mapqtl_input.label }} {{ form.mapqtl_input }}
+              <a href="#" id="toogleHelpZip">
+                <img src="{{url_for('static', filename='help.png')}}" alt="Help" />
+              </a>
             </li>
             <li>
               {{ form.map_input.label }} {{ form.map_input }}
+              <a href="#" id="toogleHelpMap">
+                <img src="{{url_for('static', filename='help.png')}}" alt="Help" />
+              </a>
             </li>
             <li>
               <input type="submit" value="Submit">
             </li>
           </ul>
         </form>
+        <div id="helpZip">
+          <p style="color:green">
+            A zip file containing all the *.mqo files in the MapQTL
+            project directory that you want to analyze.
+          </p>
+        </div>
+        <div id="helpMap">
+          <p style="color:green">
+            The *.map file used in the MapQTL session that produced the
+            files in the zip file.
+          </p>
+        </div>
 
         <h4> Checkout your former session: </h4>
         <form method="POST" action="" >
