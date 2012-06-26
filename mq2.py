@@ -47,6 +47,8 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 
+## I wonder if these two class could be removed by using the NumberRange
+## object from wtforms. But it seems to not validate correctly.
 class ValidateFloat(object):
     """
     Validates that the field contains a float. This validator will stop the
@@ -70,8 +72,6 @@ class ValidateFloat(object):
             raise StopValidation(self.message)
 
 
-## I wonder if these two class could be removed by using the NumberRange
-## object from wtforms. But it seems to not validate correctly.
 class ValidateInt(object):
     """
     Validates that the field contains a integer. This validator will
@@ -123,6 +123,9 @@ class InputForm(Form):
         validators=[Required(), ValidateInt()])
 
 
+## Functions
+
+
 def allowed_file(input_file):
     """ Validate the uploaded file.
     Checks if its extension and mimetype are within the lists of
@@ -140,6 +143,16 @@ def allowed_file(input_file):
     return output
 
 
+def generate_exp_id():
+    """ Generate an experiment id using time.
+    """
+    output = "%s" % datetime.datetime.now()
+    output = output.rsplit('.', 1)[0].strip()
+    for char in [' ', ':', '.', '-']:
+        output = output.replace(char, '')
+    return output.strip()
+
+
 def generate_session_id(size=15):
     """ Generate a session id using the time and a random string of
     characters.
@@ -150,16 +163,6 @@ def generate_session_id(size=15):
     salt = ''.join(random.choice(chars) for x in range(size))
     output = "%s-%s" % (datetime.datetime.now(), salt)
     output = output.strip()
-    for char in [' ', ':', '.', '-']:
-        output = output.replace(char, '')
-    return output.strip()
-
-
-def generate_exp_id():
-    """ Generate an experiment id using time.
-    """
-    output = "%s" % datetime.datetime.now()
-    output = output.rsplit('.', 1)[0].strip()
     for char in [' ', ':', '.', '-']:
         output = output.replace(char, '')
     return output.strip()
@@ -191,8 +194,14 @@ def retrieve_exp_info(session_id, exp_id):
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     config = ConfigParser.RawConfigParser()
     config.read('%s/exp.cfg' % folder)
-    lod_threshold = config.getfloat('Parameters', 'LOD_threshold')
-    mapqtl_session = config.getint('Parameters', 'MapQTL_session')
+    try:
+        lod_threshold = config.getfloat('Parameters', 'LOD_threshold')
+    except ValueError:
+        lod_threshold = None
+    try:
+        mapqtl_session = config.getint('Parameters', 'MapQTL_session')
+    except ValueError:
+        mapqtl_session = None
     return {'lod_threshold': lod_threshold,
             'mapqtl_session': mapqtl_session}
 
