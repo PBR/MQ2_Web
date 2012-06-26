@@ -29,7 +29,7 @@ from lib.add_qtl_to_map import main as add_qtl_to_map
 
 
 CONFIG = ConfigParser.ConfigParser()
-CONFIG.readfp(open(os.path.join(os.path.dirname(os.path.abspath( __file__ )),
+CONFIG.readfp(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
     'mq2.cfg')))
 # folder where the files can be uploaded
 UPLOAD_FOLDER = CONFIG.get('mq2', 'upload_folder')
@@ -67,7 +67,8 @@ class ValidateFloat(object):
             float(field.data)
         except ValueError:
             if self.message is None:
-                self.message = field.gettext(u'This field should contain a float.')
+                self.message = field.gettext(
+                    u'This field should contain a float.')
 
             field.errors[:] = []
             raise StopValidation(self.message)
@@ -90,7 +91,8 @@ class ValidateInt(object):
             float(field.data)
         except ValueError:
             if self.message is None:
-                self.message = field.gettext(u'This field should contain an integer.')
+                self.message = field.gettext(
+                    u'This field should contain an integer.')
 
             field.errors[:] = []
             raise StopValidation(self.message)
@@ -132,7 +134,7 @@ def allowed_file(input_file):
     Checks if its extension and mimetype are within the lists of
     mimetypes and extensions allowed.
 
-    @param input_file a File object uploaded and for which we want to 
+    @param input_file a File object uploaded and for which we want to
     check that its extension and it mimetype is allowed.
     """
     filename = input_file.filename
@@ -251,7 +253,7 @@ def retrieve_qtl_number(session_id, exp_id):
 def run_mq2(session_id, lod_threshold, mapqtl_session):
     """ Run the scripts to extract the QTLs.
     @param session_id the session identifier uniquely identifying the
-    MapQTL zip file and the JoinMap map file. The session identifier 
+    MapQTL zip file and the JoinMap map file. The session identifier
     also uniquely identifies the folder in which are the files uploaded.
     @param lod_threshold the LOD threshold to use to consider a value
     significant for a QTL.
@@ -323,7 +325,8 @@ def index():
     form = UploadForm(csrf_enabled=False)
     session_form = SessionForm(csrf_enabled=False)
     if session_form.validate_on_submit()and session_form.session_id.data:
-        return redirect(url_for('session', session_id=session_form.session_id.data))
+        return redirect(url_for('session',
+            session_id=session_form.session_id.data))
     if form.validate_on_submit():
         upload_file = request.files['mapqtl_input']
         map_file = request.files['map_input']
