@@ -11,7 +11,9 @@ hotspots.
 
 from flask import (Flask, render_template, request, redirect, url_for,
     flash, send_from_directory)
-from flaskext.wtf import Form, FileField, file_required, TextField
+from flaskext.wtf import (Form, FileField, file_required, TextField,
+    Required)
+from wtforms.validators import StopValidation
 
 import ConfigParser
 import datetime
@@ -45,6 +47,52 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 
+class ValidateFloat(object):
+    """
+    Validates that the field contains a float. This validator will stop the
+    validation chain on error.
+
+    @param message Error message to raise in case of a validation error.
+    """
+    field_flags = ('required', )
+
+    def __init__(self, message=None):
+        self.message = message
+
+    def __call__(self, form, field):
+        try:
+            float(field.data)
+        except ValueError:
+            if self.message is None:
+                self.message = field.gettext(u'This field should contain a float.')
+
+            field.errors[:] = []
+            raise StopValidation(self.message)
+
+
+class ValidateInt(object):
+    """
+    Validates that the field contains a integer. This validator will
+    stop the validation chain on error.
+
+    @param message Error message to raise in case of a validation error.
+    """
+    field_flags = ('required', )
+
+    def __init__(self, message=None):
+        self.message = message
+
+    def __call__(self, form, field):
+        try:
+            float(field.data)
+        except ValueError:
+            if self.message is None:
+                self.message = field.gettext(u'This field should contain an integer.')
+
+            field.errors[:] = []
+            raise StopValidation(self.message)
+
+
 class UploadForm(Form):
     """ Form used to upload the MapQTL output file and the JoinMap map
     file.
@@ -59,15 +107,18 @@ class SessionForm(Form):
     """ Form used to specify a session identifier to be able to go back
     to this specific session.
     """
-    session_id = TextField("Session identifier")
+    session_id = TextField("Session identifier",
+        validators=[Required()])
 
 
 class InputForm(Form):
     """ Form used to specify the arguments needed when extracting the
     QTLs information from the MapQTL output.
     """
-    lod_threshold = TextField("LOD Threshold")
-    mapqtl_session = TextField("MapQTL session")
+    lod_threshold = TextField("LOD Threshold",
+        validators=[Required(), ValidateFloat()])
+    mapqtl_session = TextField("MapQTL session",
+        validators=[Required(), ValidateInt()])
 
 
 def allowed_file(input_file):
