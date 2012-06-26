@@ -10,9 +10,7 @@
     <title>MQ²</title>
     
     <link rel="stylesheet" type="text/css"
-        href="http://flask.pocoo.org/docs/_static/flasky.css" />
-    <link rel="stylesheet" type="text/css"
-        href="http://flask.pocoo.org/docs/_static/pygments.css" />
+        href="{{url_for('static', filename='flasky.css')}}" />
     <script type="text/javascript"
       src="{{url_for('static', filename='jquery-ui-1.8.21.custom.min.js')}}"></script>
     <script type="text/javascript"
@@ -58,13 +56,13 @@
           set by the user. It extracts all the QTLs detected by MapQTL
           and using a map file, it finds the marker closest to the peak
           and finally calculates the number of QTLs found near each
-          marker on the map. Note that this works for Inbterval mapping
-          and MQM or RQM mapping, not for KW mapping.
+          marker on the map. Note that this works for Interval mapping,
+          MQM or RQM mapping but not for KW mapping.
         </p>
         <p>
           This approach quickly allows you to find and visualize
           potential QTL hotspot in your dataset. This is particularly
-          usefull for large QTL analysis on a large number of traits.
+          useful for large QTL analysis on a large number of traits.
         </p>
 
         {% with messages = get_flashed_messages() %}
@@ -92,30 +90,30 @@
               <a href="#" id="toogleHelpZip">
                 <img src="{{url_for('static', filename='help.png')}}" alt="Help" />
               </a>
+              <div id="helpZip">
+                  <p style="color:green">
+                    A zip file containing all the *.mqo files in the MapQTL
+                    project directory that you want to analyze.
+                  </p>
+                </div>
             </li>
             <li>
               {{ form.map_input.label }} {{ form.map_input }}
               <a href="#" id="toogleHelpMap">
                 <img src="{{url_for('static', filename='help.png')}}" alt="Help" />
               </a>
+              <div id="helpMap">
+              <p style="color:green">
+                The *.map file used in the MapQTL session that produced the
+                files in the zip file.
+              </p>
+        </div>
             </li>
             <li>
               <input type="submit" value="Submit">
             </li>
           </ul>
         </form>
-        <div id="helpZip">
-          <p style="color:green">
-            A zip file containing all the *.mqo files in the MapQTL
-            project directory that you want to analyze.
-          </p>
-        </div>
-        <div id="helpMap">
-          <p style="color:green">
-            The *.map file used in the MapQTL session that produced the
-            files in the zip file.
-          </p>
-        </div>
 
         <h4> Checkout your former session: </h4>
         <form method="POST" action="" >
