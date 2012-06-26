@@ -1,0 +1,5 @@
+[mq2]
+upload_folder=./uploads
+allowed_extensions=zip
+allows_mimetypes=application/zip,application/octet-stream
+secret_key='my secret to change'
