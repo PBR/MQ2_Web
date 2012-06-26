@@ -61,7 +61,7 @@ def get_qtls_from_mapqtl_data(matrix, threshold, inputfile):
     :arg inputfile, name of the inputfile in which the QTLs have been
     found
     """
-    trait_name = inputfile.split('IM)_')[1].split('.mqo')[0]
+    trait_name = inputfile.split(')_', 1)[1].split('.mqo')[0]
     qtls = []
     
     qtl = None
