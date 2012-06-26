@@ -70,6 +70,8 @@ class ValidateFloat(object):
             raise StopValidation(self.message)
 
 
+## I wonder if these two class could be removed by using the NumberRange
+## object from wtforms. But it seems to not validate correctly.
 class ValidateInt(object):
     """
     Validates that the field contains a integer. This validator will
