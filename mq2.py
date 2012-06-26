@@ -28,20 +28,21 @@ from lib.add_marker_to_qtls import main as add_marker_to_qtls
 from lib.add_qtl_to_map import main as add_qtl_to_map
 
 
+CONFIG = ConfigParser.ConfigParser()
+CONFIG.readfp(open('mq2.cfg'))
+CONFIG.read(['/etc/mq2.cfg'])
 # folder where the files can be uploaded
-UPLOAD_FOLDER = './uploads'
+UPLOAD_FOLDER = CONFIG.get('mq2', 'upload_folder')
 # Extension allowed for file to upload
-ALLOWED_EXTENSIONS = set(['zip'])
+ALLOWED_EXTENSIONS = set(item.strip() for item in CONFIG.get('mq2',
+    'allowed_extensions').split(','))
 # Mimetype allowed for file to upload
-ALLOWED_MIMETYPES = set(['application/zip', 'application/octet-stream'])
+ALLOWED_MIMETYPES = set(item.strip() for item in CONFIG.get('mq2',
+    'allows_mimetypes').split(','))
 
-# Turn on or off the debugging mode (turn on only for development).
-DEBUG = True
 # Create the application.
 APP = Flask(__name__)
-APP.secret_key = 'df;lkhad;fkl234jbcl90-=davjnk.djbgf-*iqgfb.vkjb34hrt' \
-'q2lkhflkjdhflkdjhbfakljgipfurp923243nmrlenr;k3jbt;kt'
-APP.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+APP.secret_key = CONFIG.get('mq2', 'secret_key')
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
@@ -424,5 +425,5 @@ def retrieve(session_id, exp_id, filename):
 
 
 if __name__ == '__main__':
-    APP.debug = DEBUG
+    APP.debug = True
     APP.run()
