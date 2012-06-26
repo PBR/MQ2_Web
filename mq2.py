@@ -157,7 +157,7 @@ def experiment_done(session_id, lod_threshold, mapqtl_session):
     """
     for exp in get_experiment_ids(session_id):
         infos = retrieve_exp_info(session_id, exp)
-        if infos['mapqtl_session'] == int(mapqtl_session) and
+        if infos['mapqtl_session'] == int(mapqtl_session) and \
             infos['lod_threshold'] == float(lod_threshold):
             return exp
     return False
