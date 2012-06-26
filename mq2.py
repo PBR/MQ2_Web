@@ -51,8 +51,7 @@ class UploadForm(Form):
     """
     mapqtl_input = FileField("MapQTL zip file",
         validators=[file_required()])
-    map_input = FileField("Map file (the *.map file used in the MapQTL " \
-        "session that produced the files in the zip file)",
+    map_input = FileField("Map file",
         validators=[file_required()])
 
 
@@ -222,6 +221,7 @@ def write_down_config(folder, lod_threshold, mapqtl_session):
 
     with open(os.path.join(folder, 'exp.cfg'), 'wb') as configfile:
         config.write(configfile)
+
 
 ##  Web-app
 
