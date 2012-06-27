@@ -34,11 +34,11 @@
 
         <h3> Pre-visualisation</h3>
         <div id="fig">
-        {% if not max_qtls %}
-        <p style="color:red">
-          No QTLs were found for this data or with these parameters
-        </p>
-        {% endif %}
+          {% if not max_qtls %}
+          <p style="color:red">
+            No QTLs were found for this data or with these parameters
+          </p>
+          {% endif %}
           <script type="text/javascript+protovis" >
 {% autoescape off%}
 
@@ -98,55 +98,57 @@ vis.render();
           <td>: {{ infos['mapqtl_session'] }}</td>
         </tr>
       </table>
-        <h3> Output files </h3>
-        <ul>
-          {% if 'qtls.csv' in files %}
-          <li>
-            <a href="{{url_for('retrieve',
-              session_id=session_id, exp_id=exp_id,
-              filename='qtls.csv')}}">
-              qtls.csv</a> -- List of all the QTLs found in
-              the MapQTL output.
-          </li>
-          {% endif %}
-          {% if 'qtls_with_mk.csv' in files %}
-          <li>
-            <a href="{{url_for('retrieve',
-              session_id=session_id, exp_id=exp_id,
-              filename='qtls_with_mk.csv')}}">
-              qtls_with_mk.csv</a> -- List of all the QTLs found
-              in the MapQTL output with their closest marker on
-              the map.
-          </li>
-          {% endif %}
-          {% if 'map_with_qtl.csv' in files %}
-          <li>
-            <a href="{{url_for('retrieve',
-              session_id=session_id, exp_id=exp_id,
-              filename='map_with_qtl.csv')}}">
-              map_with_qtl.csv</a> -- Representation of the map in
-              CSV with the number of QTLs found for each marker.
-          </li>
-          {% endif %}
-          {% if 'qtls_matrix.csv' in files %}
-          <li>
-            <a href="{{url_for('retrieve',
-              session_id=session_id, exp_id=exp_id,
-              filename='qtls_matrix.csv')}}">
-              qtls_matrix.csv</a> -- Matrix giving for each marker trait
-              combination the LOD values found by MapQTL.
-          </li>
-          {% endif %}
-          {% if 'map.csv' in files %}
-          <li>
-            <a href="{{url_for('retrieve',
-              session_id=session_id, exp_id=exp_id,
-              filename='map.csv')}}">
-              map.csv</a> -- The genetic map extracted from the MapQTL
-              output and used to place the QTL in this experiment.
-          </li>
-          {% endif %}
-        </ul>
+      {% if files %}
+      <h3> Output files </h3>
+      <ul>
+        {% if 'qtls.csv' in files %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='qtls.csv')}}">
+            qtls.csv</a> -- List of all the QTLs found in
+            the MapQTL output.
+        </li>
+        {% endif %}
+        {% if 'qtls_with_mk.csv' in files %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='qtls_with_mk.csv')}}">
+            qtls_with_mk.csv</a> -- List of all the QTLs found
+            in the MapQTL output with their closest marker on
+            the map.
+        </li>
+        {% endif %}
+        {% if 'map_with_qtl.csv' in files %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='map_with_qtl.csv')}}">
+            map_with_qtl.csv</a> -- Representation of the map in
+            CSV with the number of QTLs found for each marker.
+        </li>
+        {% endif %}
+        {% if 'qtls_matrix.csv' in files %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='qtls_matrix.csv')}}">
+            qtls_matrix.csv</a> -- Matrix giving for each marker trait
+            combination the LOD values found by MapQTL.
+        </li>
+        {% endif %}
+        {% if 'map.csv' in files %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='map.csv')}}">
+            map.csv</a> -- The genetic map extracted from the MapQTL
+            output and used to place the QTL in this experiment.
+        </li>
+        {% endif %}
+      </ul>
+      {% endif %}
       </div>
     </div>
   </body>
