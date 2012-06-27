@@ -110,8 +110,8 @@ vis.render();
           <li>
             <a href="{{url_for('retrieve',
               session_id=session_id, exp_id=exp_id,
-              filename='qtl_with_mk.csv')}}">
-              qtl_with_mk.csv</a> -- List of all the QTLs found
+              filename='qtls_with_mk.csv')}}">
+              qtls_with_mk.csv</a> -- List of all the QTLs found
               in the MapQTL output with their closest marker on
               the map.
           </li>
@@ -121,6 +121,13 @@ vis.render();
               filename='map_with_qtl.csv')}}">
               map_with_qtl.csv</a> -- Representation of the map in
               CSV with the number of QTLs found for each marker.
+          </li>
+          <li>
+            <a href="{{url_for('retrieve',
+              session_id=session_id, exp_id=exp_id,
+              filename='qtls_matrix.csv')}}">
+              qtls_matrix.csv</a> -- Matrix giving for each marker trait
+              combination the LOD values found by MapQTL.
           </li>
         </ul>
       </div>
