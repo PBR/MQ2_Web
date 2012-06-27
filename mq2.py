@@ -26,7 +26,7 @@ from ConfigParser import NoSectionError
 
 from pymq2 import (set_tmp_folder, extract_zip, MQ2Exception,
     MQ2NoMatrixException, MQ2NoSuchSessionException)
-from pymq2.transform_mapfile_to_csv import transform_mapfile_to_csv
+from pymq2.generate_map_from_mapqtl import generate_map_from_mapqtl
 from pymq2.parse_mapqtl_file import parse_mapqtl_file
 from pymq2.add_marker_to_qtls import add_marker_to_qtls
 from pymq2.add_qtl_to_map import add_qtl_to_map
@@ -107,8 +107,6 @@ class UploadForm(Form):
     file.
     """
     mapqtl_input = FileField("MapQTL zip file",
-        validators=[file_required()])
-    map_input = FileField("Map file",
         validators=[file_required()])
 
 
@@ -289,9 +287,9 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
         tmp_folder = set_tmp_folder()
         extract_zip(os.path.join(folder, 'input.zip'), tmp_folder)
 
-        transform_mapfile_to_csv(inputfile=
-            os.path.join(folder, 'map'),
-            outputfile=os.path.join(folder, 'map.csv'))
+        generate_map_from_mapqtl(inputfolder=tmp_folder,
+                sessionid=mapqtl_session,
+                outputfile=os.path.join(exp_folder, 'map.csv'))
 
         try:
             parse_mapqtl_file(inputfolder=tmp_folder,
@@ -304,11 +302,11 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
             no_matrix = err
 
         add_marker_to_qtls(qtlfile=os.path.join(exp_folder, 'qtls.csv'),
-            mapfile=os.path.join(folder, 'map.csv'),
+            mapfile=os.path.join(exp_folder, 'map.csv'),
             outputfile=os.path.join(exp_folder, 'qtls_with_mk.csv'))
 
         add_qtl_to_map(qtlfile=os.path.join(exp_folder, 'qtls_with_mk.csv'),
-            mapfile=os.path.join(folder, 'map.csv'),
+            mapfile=os.path.join(exp_folder, 'map.csv'),
             outputfile=os.path.join(exp_folder, 'map_with_qtl.csv'))
     except MQ2NoSuchSessionException, err:
         shutil.rmtree(exp_folder)
@@ -355,16 +353,12 @@ def index():
             session_id=session_form.session_id.data))
     if form.validate_on_submit():
         upload_file = request.files['mapqtl_input']
-        map_file = request.files['map_input']
-        if upload_file and allowed_file(upload_file)\
-            and map_file:
+        if upload_file and allowed_file(upload_file):
             session_id = generate_session_id()
             upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
             os.mkdir(upload_folder)
             upload_file.save(os.path.join(upload_folder,
                 'input.zip'))
-            map_file.save(os.path.join(upload_folder,
-                'map'))
             return redirect(url_for('session', session_id=session_id))
         else:
             flash('Wrong file type or name.')
@@ -434,9 +428,11 @@ def results(session_id, exp_id):
         max_qtls = max(qtls_evo) + 2
     date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
         exp_id[8:10], exp_id[10:12], exp_id[12:14])
+    files = os.listdir(os.path.join(folder, exp_id))
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id, infos=infos, date=date,
-        qtls_evo=qtls_evo, max_qtls=max_qtls)
+        qtls_evo=qtls_evo, max_qtls=max_qtls,
+        files=files)
 
 
 @APP.route('/retrieve/<session_id>/<exp_id>/<filename>')
