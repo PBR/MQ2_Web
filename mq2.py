@@ -19,13 +19,17 @@ import ConfigParser
 import datetime
 import os
 import random
+import shutil
 import string
+import tempfile
+from ConfigParser import NoSectionError
 
-
-from lib.transform_mapfile_to_csv import main as transform_mapfile_to_csv
-from lib.parse_mapqtl_file import main as parse_mapqtl_file
-from lib.add_marker_to_qtls import main as add_marker_to_qtls
-from lib.add_qtl_to_map import main as add_qtl_to_map
+from pymq2 import (set_tmp_folder, extract_zip, MQ2Exception,
+    MQ2NoMatrixException, MQ2NoSuchSessionException)
+from pymq2.transform_mapfile_to_csv import transform_mapfile_to_csv
+from pymq2.parse_mapqtl_file import parse_mapqtl_file
+from pymq2.add_marker_to_qtls import add_marker_to_qtls
+from pymq2.add_qtl_to_map import add_qtl_to_map
 
 
 CONFIG = ConfigParser.ConfigParser()
@@ -221,9 +225,13 @@ def retrieve_exp_info(session_id, exp_id):
         lod_threshold = config.getfloat('Parameters', 'LOD_threshold')
     except ValueError:
         lod_threshold = None
+    except NoSectionError:
+        lod_threshold = None
     try:
         mapqtl_session = config.getint('Parameters', 'MapQTL_session')
     except ValueError:
+        mapqtl_session = None
+    except NoSectionError:
         mapqtl_session = None
     return {'lod_threshold': lod_threshold,
             'mapqtl_session': mapqtl_session}
@@ -239,14 +247,17 @@ def retrieve_qtl_number(session_id, exp_id):
     run which may have specific parameters.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
-    stream = open('%s/map_with_qtl.csv' % folder, 'r')
     qtls_evo = []
-    for row in stream.readlines():
-        row = row.split(',')
-        if row[3].startswith('#'):
-            continue
-        else:
-            qtls_evo.append(row[3].strip())
+    try:
+        stream = open('%s/map_with_qtl.csv' % folder, 'r')
+        for row in stream.readlines():
+            row = row.split(',')
+            if row[3].startswith('#'):
+                continue
+            else:
+                qtls_evo.append(row[3].strip())
+    except IOError:
+        print 'No output in folder %s' % folder
     return qtls_evo
 
 
@@ -272,26 +283,41 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
     write_down_config(os.path.join(folder, exp_id),
         lod_threshold,
         mapqtl_session)
+    tmp_folder = None
+    no_matrix = False
+    try:
+        tmp_folder = set_tmp_folder()
+        extract_zip(os.path.join(folder, 'input.zip'), tmp_folder)
 
-    transform_mapfile_to_csv(folder=folder,
-        inputfile='map',
-        outputfile='map.csv')
+        transform_mapfile_to_csv(inputfile=
+            os.path.join(folder, 'map'),
+            outputfile=os.path.join(folder, 'map.csv'))
 
-    parse_mapqtl_file(folder=folder,
-        sessionid=mapqtl_session,
-        zipfile=os.path.join(folder, 'input.zip'),
-        lodthreshold=lod_threshold,
-        outputfile=os.path.join(exp_id, 'qtls.csv'))
+        try:
+            parse_mapqtl_file(inputfolder=tmp_folder,
+                sessionid=mapqtl_session,
+                lodthreshold=lod_threshold,
+                qtl_outputfile=os.path.join(exp_folder, 'qtls.csv'),
+                qtl_matrixfile=os.path.join(exp_folder, 'qtls_matrix.csv'))
+        except MQ2NoMatrixException, err:
+            print 'MQ2NoMatrixException: %s' % err
+            no_matrix = err
 
-    add_marker_to_qtls(folder,
-        qtlfile=os.path.join(exp_folder, 'qtls.csv'),
-        mapfile=os.path.join(folder, 'map.csv'),
-        outputfile=os.path.join(exp_id, 'qtl_with_mk.csv'))
+        add_marker_to_qtls(qtlfile=os.path.join(exp_folder, 'qtls.csv'),
+            mapfile=os.path.join(folder, 'map.csv'),
+            outputfile=os.path.join(exp_folder, 'qtls_with_mk.csv'))
 
-    add_qtl_to_map(folder,
-        qtlfile=os.path.join(exp_folder, 'qtl_with_mk.csv'),
-        mapfile=os.path.join(folder, 'map.csv'),
-        outputfile=os.path.join(exp_id, 'map_with_qtl.csv'))
+        add_qtl_to_map(qtlfile=os.path.join(exp_folder, 'qtls_with_mk.csv'),
+            mapfile=os.path.join(folder, 'map.csv'),
+            outputfile=os.path.join(exp_folder, 'map_with_qtl.csv'))
+    except MQ2NoSuchSessionException, err:
+        shutil.rmtree(exp_folder)
+        raise MQ2NoSuchSessionException(err)
+    finally:
+        if tmp_folder and os.path.exists(tmp_folder):
+            shutil.rmtree(tmp_folder)
+    if no_matrix is not False:
+        raise MQ2NoMatrixException(no_matrix)
 
 
 def write_down_config(folder, lod_threshold, mapqtl_session):
@@ -367,7 +393,11 @@ def session(session_id):
     if form.validate_on_submit():
         lod_threshold = form.lod_threshold.data
         mapqtl_session = form.mapqtl_session.data
-        output = run_mq2(session_id, lod_threshold, mapqtl_session)
+        output = None
+        try:
+            output = run_mq2(session_id, lod_threshold, mapqtl_session)
+        except MQ2Exception, err:
+            form.errors['MQ2'] = err
         if output:
             flash("Experiment already run in experiment: %s" % output)
     exp_ids = get_experiment_ids(session_id)
