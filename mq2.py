@@ -429,6 +429,7 @@ def results(session_id, exp_id):
     date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
         exp_id[8:10], exp_id[10:12], exp_id[12:14])
     files = os.listdir(os.path.join(folder, exp_id))
+    files.remove(u'exp.cfg')
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id, infos=infos, date=date,
         qtls_evo=qtls_evo, max_qtls=max_qtls,
