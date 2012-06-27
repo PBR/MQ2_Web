@@ -147,6 +147,12 @@ vis.render();
             output and used to place the QTL in this experiment.
         </li>
         {% endif %}
+        <li>
+          <a href="{{url_for('retrieve',
+            session_id=session_id, exp_id=exp_id,
+            filename='zip')}}">
+            Zip</a> -- Zip archives containing all the above files.
+        </li>
       </ul>
       {% endif %}
       </div>

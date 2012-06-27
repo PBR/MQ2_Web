@@ -22,7 +22,14 @@ import random
 import shutil
 import string
 import tempfile
+import zipfile
 from ConfigParser import NoSectionError
+
+try:
+    import zlib
+    ZCOMPRESSION = zipfile.ZIP_DEFLATED
+except:
+    ZCOMPRESSION = zipfile.ZIP_STORED
 
 from pymq2 import (set_tmp_folder, extract_zip, MQ2Exception,
     MQ2NoMatrixException, MQ2NoSuchSessionException)
@@ -451,7 +458,24 @@ def retrieve(session_id, exp_id, filename):
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
     upload_folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
-    return send_from_directory(upload_folder, filename)
+    if filename != 'zip':
+        return send_from_directory(upload_folder, filename)
+    else:
+        if os.path.exists(os.path.join(upload_folder, '%s.zip' % exp_id)):
+            return send_from_directory(upload_folder, '%s.zip' % exp_id)
+        zf = zipfile.ZipFile(os.path.join(upload_folder, '%s.zip' % exp_id),
+            mode='w')
+        try:
+            for filename in os.listdir(upload_folder):
+                if not filename.endswith('.zip'):
+                    zf.write(os.path.join(upload_folder, filename),
+                        arcname=os.path.join(exp_id, filename),
+                        compress_type=ZCOMPRESSION)
+        except IOError, err:
+            print 'ERROR while generating the zip file: %s' % err
+        finally:
+            zf.close()
+        return send_from_directory(upload_folder, '%s.zip' % exp_id)
 
 
 if __name__ == '__main__':
