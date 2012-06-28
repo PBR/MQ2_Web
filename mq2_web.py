@@ -404,7 +404,8 @@ def index():
         else:
             flash('Wrong file type or name.')
     return render_template('index.html', form=form,
-        session_form=session_form)
+        session_form=session_form,
+        sample_session=CONFIG.get('mq2', 'sample_session'))
 
 
 @APP.route('/session/<session_id>/', methods=['GET', 'POST'])
