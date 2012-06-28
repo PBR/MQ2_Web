@@ -280,7 +280,6 @@ def retrieve_qtl_infos(session_id, exp_id):
         lg = None
         cnt = 0
         for row in stream.readlines():
-            print row
             row = row.split(',')
             if not lg:
                 lg = row[1]
@@ -288,7 +287,6 @@ def retrieve_qtl_infos(session_id, exp_id):
                 continue
             else:
                 qtls_evo.append(row[3].strip())
-                print row[3]
             if lg != row[1]:
                 lg_index.append(cnt)
                 lg = None
