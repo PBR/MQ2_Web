@@ -1,4 +1,4 @@
-MQ²_web
+MQ²_Web
 =======
 
 :Author: Pierre-Yves Chibon <pierre-yves.chibon@wur.nl>, <pingou@pingoured.fr>
@@ -18,7 +18,7 @@ large number of traits.
 
 Get this project:
 -----------------
-Source:  https://github.com/PBR/MQ2_web
+Source:  https://github.com/PBR/MQ2_Web
 
 
 Dependencies:
@@ -48,13 +48,15 @@ My approach.
 Retrieve the sources:
  cd /srv/
  git clone <repo>
- cd MQ2-web
+ cd MQ2_Web
 
 Copy the configuration file
  cp mq2.cfg.sample mq2.cfg
 
 Adjust the configuration file (upload folder, secret key...)
-For example use for the upload /var/www/uploads:
+
+Don't forget to create the folder and set its right it you use a specific one,
+for example if you use ``/var/www/uploads`` as upload folder:
  sudo mkdir /var/www/uploads
  sudo chown apache:apache /var/www/uploads
 
@@ -68,7 +70,7 @@ and put in this file:
  </Directory>
 Then create the file /var/www/wsgi/mq2.wsgi with:
  import sys
- sys.path.insert(0, '/srv/MQ2_web')
+ sys.path.insert(0, '/srv/MQ2_Web')
  
  import mq2_web
  application = mq2_web.APP
