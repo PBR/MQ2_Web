@@ -56,7 +56,7 @@ Copy the configuration file::
 Adjust the configuration file (upload folder, secret key...)
 
 Don't forget to create the folder and set its right it you use a specific one,
-for example if you use ``/var/www/uploads`` as upload folder:
+for example if you use ``/var/www/uploads`` as upload folder::
   sudo mkdir /var/www/uploads
   sudo chown apache:apache /var/www/uploads
 
