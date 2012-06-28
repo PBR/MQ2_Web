@@ -44,14 +44,14 @@
 
 var data = {{ qtls_evo }};
 
-var w = 500,
+var w = 800,
     h = 300,
     x = pv.Scale.ordinal(pv.range({{ qtls_evo|length }})).splitBanded(0, w, 4/5),
-    y = pv.Scale.linear(0, {{ max_qtls }}).range(0, 250);
+    y = pv.Scale.linear(0, {{ max_qtls }}).range(0, h);
 
 var vis = new pv.Panel()
     .width(w)
-    .height(250)
+    .height(300)
     .bottom(60)
     .left(30)
     .right(5)
@@ -65,8 +65,8 @@ var bar = vis.add(pv.Bar)
     .height(y);
 
 var title = vis.add(pv.Label)
-    .left(250)
-    .top(16)
+    .left(w/2)
+    .top(5)
     .textAlign("center")
     .text("Number of QTLs for each marker on the map");
 
@@ -80,6 +80,33 @@ vis.add(pv.Rule)
     .strokeStyle("#000")
   .anchor("left").add(pv.Label)
     .text(function(d) d.toFixed(1));
+
+var text = {{ qtls_lg }};
+
+function text_position(input) {
+  if(input % 2 == 0){
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
+function text_color(input) {
+  if(input % 2 == 0){
+    return '#b1b1b1';
+  } else {
+    return '#b1b1b1';
+  }
+}
+
+vis.add(pv.Rule)
+    .data({{ lg_index }})
+    .left(function(d) d * w / {{ qtls_evo|length }} )
+    .top(function() 30 + (text_position(this.index) * 7))
+    .strokeStyle(function() text_color(this.index))
+    .text(function() text[this.index])
+    .textStyle(function() text_color(this.index))
+    .add(pv.Label);
 
 vis.render();
 {% endautoescape %}
@@ -96,6 +123,10 @@ vis.render();
         <tr>
           <td>MapQTL session </td>
           <td>: {{ infos['mapqtl_session'] }}</td>
+        </tr>
+        <tr>
+          <td>Experiment ID </td>
+          <td>: {{ infos['experiment_id'] }}</td>
         </tr>
       </table>
       {% if files %}
