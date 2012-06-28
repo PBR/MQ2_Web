@@ -43,7 +43,9 @@ Deploying this project:
 Instruction to deploy this application is available on the
 `Flask deployment documentation`_ page.
 
-My approach.
+ **My approach.**
+
+Below is the approach I took to deploy the instance on a local machine.
 
 Retrieve the sources::
   cd /srv/
