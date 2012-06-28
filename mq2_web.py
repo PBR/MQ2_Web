@@ -31,12 +31,12 @@ try:
 except:
     ZCOMPRESSION = zipfile.ZIP_STORED
 
-from pymq2 import (set_tmp_folder, extract_zip, MQ2Exception,
+from MQ2 import (set_tmp_folder, extract_zip, MQ2Exception,
     MQ2NoMatrixException, MQ2NoSuchSessionException)
-from pymq2.generate_map_from_mapqtl import generate_map_from_mapqtl
-from pymq2.parse_mapqtl_file import parse_mapqtl_file
-from pymq2.add_marker_to_qtls import add_marker_to_qtls
-from pymq2.add_qtl_to_map import add_qtl_to_map
+from MQ2.generate_map_from_mapqtl import generate_map_from_mapqtl
+from MQ2.parse_mapqtl_file import parse_mapqtl_file
+from MQ2.add_marker_to_qtls import add_marker_to_qtls
+from MQ2.add_qtl_to_map import add_qtl_to_map
 
 
 CONFIG = ConfigParser.ConfigParser()
