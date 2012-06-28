@@ -47,12 +47,14 @@ Instruction to deploy this application is available on the
 
 Below is the approach I took to deploy the instance on a local machine.
 
-Retrieve the sources::
+Retrieve 
+the sources::
  cd /srv/
  git clone <repo>
  cd MQ2_Web
 
-Copy the configuration file::
+Copy the 
+configuration file::
  cp mq2.cfg.sample mq2.cfg
 
 Adjust the configuration file (upload folder, secret key...)
