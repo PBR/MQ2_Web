@@ -3,3 +3,4 @@ upload_folder=./uploads
 allowed_extensions=zip
 allows_mimetypes=application/zip,application/octet-stream
 secret_key='my secret to change'
+sample_session='A MQ² session identifier provided as example in the front page'
