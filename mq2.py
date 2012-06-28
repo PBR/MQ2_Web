@@ -23,7 +23,7 @@ import shutil
 import string
 import tempfile
 import zipfile
-from ConfigParser import NoSectionError
+from ConfigParser import NoSectionError, NoOptionError
 
 try:
     import zlib
@@ -232,17 +232,30 @@ def retrieve_exp_info(session_id, exp_id):
         lod_threshold = None
     except NoSectionError:
         lod_threshold = None
+    except NoOptionError:
+        lod_threshold = None
     try:
         mapqtl_session = config.getint('Parameters', 'MapQTL_session')
     except ValueError:
         mapqtl_session = None
     except NoSectionError:
         mapqtl_session = None
+    except NoOptionError:
+        mapqtl_session = None
+    try:
+        exp_id = config.getint('Parameters', 'Experiment_ID')
+    except ValueError:
+        exp_id = None
+    except NoSectionError:
+        exp_id = None
+    except NoOptionError:
+        exp_id = None
     return {'lod_threshold': lod_threshold,
-            'mapqtl_session': mapqtl_session}
+            'mapqtl_session': mapqtl_session,
+            'experiment_id': exp_id}
 
 
-def retrieve_qtl_number(session_id, exp_id):
+def retrieve_qtl_infos(session_id, exp_id):
     """ Retrieve the evolution of the number of QTLs per marker in
     the results of the experiment.
     @param session_id the session identifier uniquely identifying the
@@ -250,20 +263,41 @@ def retrieve_qtl_number(session_id, exp_id):
     the folder in which are the different experiment
     @param exp_id the experiment identifier used to uniquely identify a
     run which may have specific parameters.
+    @return a tuple containing three elements.
+    The first element is the qtls_evo list, containing for each marker
+    the number of QTLs found.
+    The second element is the qtls_lg, a list of all the different
+    linkage group available.
+    The third element is the lg_index, a list of the position at which
+    the linkage group change.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     qtls_evo = []
+    qtls_lg = []
+    lg_index = []
     try:
         stream = open('%s/map_with_qtl.csv' % folder, 'r')
+        lg = None
+        cnt = 0
         for row in stream.readlines():
+            print row
             row = row.split(',')
+            if not lg:
+                lg = row[1]
             if row[3].startswith('#'):
                 continue
             else:
                 qtls_evo.append(row[3].strip())
+                print row[3]
+            if lg != row[1]:
+                lg_index.append(cnt)
+                lg = None
+            if row[1] not in qtls_lg:
+                qtls_lg.append(row[1])
+            cnt = cnt + 1
     except IOError:
         print 'No output in folder %s' % folder
-    return qtls_evo
+    return (qtls_evo, qtls_lg, lg_index)
 
 
 def run_mq2(session_id, lod_threshold, mapqtl_session):
@@ -287,7 +321,8 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
 
     write_down_config(os.path.join(folder, exp_id),
         lod_threshold,
-        mapqtl_session)
+        mapqtl_session,
+        exp_id)
     tmp_folder = None
     no_matrix = False
     try:
@@ -325,7 +360,7 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
         raise MQ2NoMatrixException(no_matrix)
 
 
-def write_down_config(folder, lod_threshold, mapqtl_session):
+def write_down_config(folder, lod_threshold, mapqtl_session, exp_id):
     """ Write down the configuration used in an experiment.
     @param folder the folder in which to write down this configuration.
     @param lod_threshold the LOD threshold to use to consider a value
@@ -337,6 +372,7 @@ def write_down_config(folder, lod_threshold, mapqtl_session):
     config.add_section('Parameters')
     config.set('Parameters', 'LOD_threshold', lod_threshold)
     config.set('Parameters', 'MapQTL_session', mapqtl_session)
+    config.set('Parameters', 'Experiment_ID', exp_id)
 
     with open(os.path.join(folder, 'exp.cfg'), 'wb') as configfile:
         config.write(configfile)
@@ -428,7 +464,7 @@ def results(session_id, exp_id):
         flash('This experiment does not exists')
         return redirect(url_for('session', session_id=session_id))
     infos = retrieve_exp_info(session_id, exp_id)
-    qtls_evo = retrieve_qtl_number(session_id, exp_id)
+    (qtls_evo, qtls_lg, lg_index) = retrieve_qtl_infos(session_id, exp_id)
     qtls_evo = [float(it) for it in qtls_evo]
     max_qtls = 0
     if qtls_evo:
@@ -440,6 +476,7 @@ def results(session_id, exp_id):
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id, infos=infos, date=date,
         qtls_evo=qtls_evo, max_qtls=max_qtls,
+        qtls_lg=qtls_lg, lg_index=lg_index,
         files=files)
 
 
