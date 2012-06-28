@@ -42,7 +42,7 @@ My approach.
 Retrieve the sources:
  cd /srv/
  git clone <repo>
- cd mq2
+ cd mq2_web
 
 Copy the configuration file
  cp mq2.cfg.sample mq2.cfg
@@ -62,11 +62,11 @@ and put in this file:
  </Directory>
 Then create the file /var/www/wsgi/mq2.wsgi with:
  import sys
- sys.path.insert(0, '/srv/mq2')
+ sys.path.insert(0, '/srv/mq2_web')
  
- import mq2
- application = mq2.APP
-Then restart apache and you should be able to access the website on 
+ import mq2_web
+ application = mq2_web.APP
+Then restart apache and you should be able to access the website on
 http://localhost/mq2
 
 
