@@ -45,30 +45,33 @@ Instruction to deploy this application is available on the
 
 My approach.
 
-Retrieve the sources:
- cd /srv/
- git clone <repo>
- cd MQ2_Web
+Retrieve the sources::
+  cd /srv/
+  git clone <repo>
+  cd MQ2_Web
 
-Copy the configuration file
- cp mq2.cfg.sample mq2.cfg
+Copy the configuration file::
+  cp mq2.cfg.sample mq2.cfg
 
 Adjust the configuration file (upload folder, secret key...)
 
 Don't forget to create the folder and set its right it you use a specific one,
 for example if you use ``/var/www/uploads`` as upload folder:
- sudo mkdir /var/www/uploads
- sudo chown apache:apache /var/www/uploads
+  sudo mkdir /var/www/uploads
+  sudo chown apache:apache /var/www/uploads
 
-Then configure apache:
- sudo vim /etc/httd/conf.d/wsgi.conf
-and put in this file:
+Then configure apache::
+  sudo vim /etc/httd/conf.d/wsgi.conf
+and put in this file::
+
  WSGIScriptAlias /mq2 /var/www/wsgi/mq2.wsgi
  <Directory /var/www/wsgi/>
      Order deny,allow
      Allow from all
  </Directory>
-Then create the file /var/www/wsgi/mq2.wsgi with:
+
+Then create the file /var/www/wsgi/mq2.wsgi with::
+
  import sys
  sys.path.insert(0, '/srv/MQ2_Web')
  
