@@ -1,10 +1,10 @@
-MQ²
-===
+MQ²_web
+=======
 
 :Author: Pierre-Yves Chibon <pierre-yves.chibon@wur.nl>, <pingou@pingoured.fr>
 
 
-A simple web application to quickly visualize output from MapQTL analysis.
+A web application for MQ2 to quickly visualize output from MapQTL analysis
 
 Assuming one QTL per linkage group and using the LOD threshold set by the user.
 This application extracts all the QTLs detected by MapQTL, using the JoinMap
@@ -15,9 +15,10 @@ This approach quickly allows you to find and visualize potential QTL hotspot
 in your dataset. This is particularly usefull for large QTL analysis on a
 large number of traits.
 
+
 Get this project:
 -----------------
-Source:  https://github.com/PBR/mq2
+Source:  https://github.com/PBR/MQ2_web
 
 
 Dependencies:
@@ -29,6 +30,10 @@ This project is a `Flask`_ application, as such it depends on:
 - python-flask-wtf
 - python-wtforms
 
+.. _MQ2: https://github.com/PBR/MQ2
+
+Since this project is a web-interface to MQ2, it requires `MQ2`_ installed.
+
 
 Deploying this project:
 -----------------------
@@ -39,10 +44,11 @@ Instruction to deploy this application is available on the
 `Flask deployment documentation`_ page.
 
 My approach.
+
 Retrieve the sources:
  cd /srv/
  git clone <repo>
- cd mq2_web
+ cd MQ2-web
 
 Copy the configuration file
  cp mq2.cfg.sample mq2.cfg
@@ -62,7 +68,7 @@ and put in this file:
  </Directory>
 Then create the file /var/www/wsgi/mq2.wsgi with:
  import sys
- sys.path.insert(0, '/srv/mq2_web')
+ sys.path.insert(0, '/srv/MQ2_web')
  
  import mq2_web
  application = mq2_web.APP
@@ -73,4 +79,4 @@ http://localhost/mq2
 License:
 --------
 
-This project is licensed under the new BSD license.
+This project is licensed GPLv3+.
