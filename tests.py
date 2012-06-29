@@ -34,6 +34,8 @@ import unittest
 
 from mq2_web import APP, CONFIG
 
+TEST_INPUT = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), 'static/Demoset.zip')
 
 class MQ2_WebTestCase(unittest.TestCase):
     """ Test the web interface for MQ2. """
@@ -42,9 +44,6 @@ class MQ2_WebTestCase(unittest.TestCase):
         APP.config['TESTING'] = True
         APP.config['CSRF_ENABLED'] = False
         self.app = APP.test_client()
-
-    def tearDown(self):
-        pass
 
     def test_index_displays(self):
         """Checks that the index page displays correctly. """
@@ -59,22 +58,22 @@ class MQ2_WebTestCase(unittest.TestCase):
                 session_id='wrong identifier'),
                 follow_redirects=True)
         self.assertTrue(post.status_code, 200)
-        self.assertTrue('<li>This session does not exists</li>' 
+        self.assertTrue('<li>This session does not exists</li>'
             in post.data)
 
     def test_sample_session(self):
         """Checks that the form works for an existing session. """
+        session_id = CONFIG.get('mq2', 'sample_session')
         post = self.app.post('/', data=dict(
-                session_id=CONFIG.get('mq2', 'sample_session')),
+                session_id=session_id),
                 follow_redirects=True)
         self.assertTrue(post.status_code, 200)
-        self.assertTrue('<p> Session identifier: <span style="color:red">' 
+        self.assertTrue('<p> Session identifier: <span style="color:red">'
             in post.data)
-
 
     def test_sample_data(self):
         """Checks that the form works to upload the demo dataset. """
-        stream = open('static/Demoset.zip')
+        stream = open(TEST_INPUT)
         post = self.app.post('/', data=dict(
                 mapqtl_input=stream),
                 follow_redirects=True)
@@ -99,7 +98,7 @@ class MQ2_WebTestCase(unittest.TestCase):
 
     def test_experiment(self):
         """Checks that the form works for an experiment. """
-        stream = open('static/Demoset.zip')
+        stream = open(TEST_INPUT)
         post = self.app.post('/', data=dict(
                 mapqtl_input=stream),
                 follow_redirects=True)
@@ -146,5 +145,5 @@ class MQ2_WebTestCase(unittest.TestCase):
         upload_folder = CONFIG.get('mq2', 'upload_folder')
         shutil.rmtree(os.path.join(upload_folder, session_id))
 
-if __name__ == '__main__':
-    unittest.main()
+SUITE = unittest.TestLoader().loadTestsFromTestCase(MQ2_WebTestCase)
+unittest.TextTestRunner(verbosity=2).run(SUITE)
