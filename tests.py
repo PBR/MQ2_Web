@@ -145,5 +145,7 @@ class MQ2_WebTestCase(unittest.TestCase):
         upload_folder = CONFIG.get('mq2', 'upload_folder')
         shutil.rmtree(os.path.join(upload_folder, session_id))
 
-SUITE = unittest.TestLoader().loadTestsFromTestCase(MQ2_WebTestCase)
-unittest.TextTestRunner(verbosity=2).run(SUITE)
+
+if __name__ == '__main__':
+    SUITE = unittest.TestLoader().loadTestsFromTestCase(MQ2_WebTestCase)
+    unittest.TextTestRunner(verbosity=2).run(SUITE)
