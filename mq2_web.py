@@ -285,18 +285,21 @@ def retrieve_qtl_infos(session_id, exp_id):
     the folder in which are the different experiment
     @param exp_id the experiment identifier used to uniquely identify a
     run which may have specific parameters.
-    @return a tuple containing three elements.
+    @return a tuple containing four elements.
     The first element is the qtls_evo list, containing for each marker
     the number of QTLs found.
-    The second element is the qtls_lg, a list of all the different
+    The second element is the mk_list, a list of all the markers on the
+    map.
+    The third element is the qtls_lg, a list of all the different
     linkage group available.
-    The third element is the lg_index, a list of the position at which
+    The fourth element is the lg_index, a list of the position at which
     the linkage group change.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     qtls_evo = []
     qtls_lg = []
     lg_index = []
+    mk_list = []
     try:
         stream = open('%s/map_with_qtl.csv' % folder, 'r')
         lg = None
@@ -314,10 +317,11 @@ def retrieve_qtl_infos(session_id, exp_id):
                 lg = None
             if row[1] not in qtls_lg:
                 qtls_lg.append(row[1])
+            mk_list.append(row[0])
             cnt = cnt + 1
     except IOError:
         print 'No output in folder %s' % folder
-    return (qtls_evo, qtls_lg, lg_index)
+    return (qtls_evo, mk_list, qtls_lg, lg_index)
 
 
 def run_mq2(session_id, lod_threshold, mapqtl_session):
@@ -457,7 +461,9 @@ def session(session_id):
         except MQ2Exception, err:
             form.errors['MQ2'] = err
         if output:
-            flash("Experiment already run in experiment: %s" % output)
+            flash("Experiment already run in experiment: <a href='%s'>" \
+                "%s</a>" % (url_for('results', session_id=session_id,
+                exp_id=output), output))
     exp_ids = get_experiment_ids(session_id)
     return render_template('session.html', session_id=session_id,
         form=form, exp_ids=exp_ids)
@@ -485,7 +491,8 @@ def results(session_id, exp_id):
         flash('This experiment does not exists')
         return redirect(url_for('session', session_id=session_id))
     infos = retrieve_exp_info(session_id, exp_id)
-    (qtls_evo, qtls_lg, lg_index) = retrieve_qtl_infos(session_id, exp_id)
+    (qtls_evo, mk_list, qtls_lg, lg_index) = retrieve_qtl_infos(
+        session_id, exp_id)
     qtls_evo = [float(it) for it in qtls_evo]
     max_qtls = 0
     if qtls_evo:
@@ -496,7 +503,7 @@ def results(session_id, exp_id):
     files.remove(u'exp.cfg')
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id, infos=infos, date=date,
-        qtls_evo=qtls_evo, max_qtls=max_qtls,
+        qtls_evo=qtls_evo, mk_list=mk_list, max_qtls=max_qtls,
         qtls_lg=qtls_lg, lg_index=lg_index,
         files=files)
 
