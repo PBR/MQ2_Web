@@ -338,7 +338,8 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
     already_done = experiment_done(session_id, lod_threshold, mapqtl_session)
     if already_done is not False:
         return already_done
-    exp_id = generate_exp_id()
+    exp_id = '%s_s%s_t%s' % (generate_exp_id(), mapqtl_session,
+        lod_threshold)
     exp_folder = os.path.join(folder, exp_id)
     if not os.path.exists(exp_folder):
         os.mkdir(exp_folder)
