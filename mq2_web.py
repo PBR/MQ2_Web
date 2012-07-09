@@ -595,7 +595,7 @@ def retrieve(session_id, exp_id, filename):
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
     upload_folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
-    if filename != 'zip':
+    if filename != '%s.zip' % exp_id:
         return send_from_directory(upload_folder, filename)
     else:
         if os.path.exists(os.path.join(upload_folder, '%s.zip' % exp_id)):
