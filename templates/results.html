@@ -67,7 +67,8 @@ var bar = vis.add(pv.Bar)
     .height(y)
     .cursor("pointer")
     .event("click", function() self.location = '{{ url_for("marker_detail", session_id=session_id, exp_id=exp_id, marker_id="")}}' + mk_list[this.index])
-    .title(function() mk_list[this.index])
+    .event("mouseover", function() self.status = mk_list[this.index])
+    .title(function() mk_list[this.index]);
 
 var title = vis.add(pv.Label)
     .left(w/2)
