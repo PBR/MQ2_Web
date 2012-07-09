@@ -13,7 +13,7 @@
         href="{{url_for('static', filename='flasky.css')}}" />
     <script type="text/javascript"
       src="{{url_for('static', filename='protovis-d3.1.js')}}"></script>
-    
+
   </head>
   <body>
     <div class="document">
@@ -42,7 +42,9 @@
           <script type="text/javascript+protovis" >
 {% autoescape off%}
 
-var data = {{ qtls_evo }};
+var data = {{ qtls_evo }}
+    mk_list = {{ mk_list }}
+    lg = {{ qtls_lg }};
 
 var w = 800,
     h = 300,
@@ -62,7 +64,10 @@ var bar = vis.add(pv.Bar)
     .left(function() x(this.index))
     .width(x.range().band)
     .bottom(0)
-    .height(y);
+    .height(y)
+    .cursor("pointer")
+    .event("click", function() self.location = '{{ url_for("marker_detail", session_id=session_id, exp_id=exp_id, marker_id="")}}' + mk_list[this.index])
+    .title(function() mk_list[this.index])
 
 var title = vis.add(pv.Label)
     .left(w/2)
@@ -73,7 +78,7 @@ var title = vis.add(pv.Label)
 vis.add(pv.Rule)
     .data(y.ticks())
     .bottom(function(d) Math.round(y(d)) - .5)
-    .strokeStyle(function(d) d ? "rgba(255,255,255,.3)" : "#000")
+    .strokeStyle(function(d) d ? "" : "#000")
   .add(pv.Rule)
     .left(0)
     .width(5)
@@ -81,7 +86,6 @@ vis.add(pv.Rule)
   .anchor("left").add(pv.Label)
     .text(function(d) d.toFixed(1));
 
-var lg = {{ qtls_lg }};
 
 function text_position(input) {
   if(input % 2 == 0){
