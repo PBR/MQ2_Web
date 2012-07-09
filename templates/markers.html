@@ -1,0 +1,72 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MQ² results</title>
+    
+    <link rel="stylesheet" type="text/css"
+        href="{{url_for('static', filename='flasky.css')}}" />
+    <script type="text/javascript"
+      src="{{url_for('static', filename='protovis-d3.1.js')}}"></script>
+
+  </head>
+  <body>
+    <div class="document">
+      <div class="section" id="intro">
+        <span id="id1"></span>
+        <h1>MQ² results for marker {{ marker_id }}<a class="headerlink" href="#intro"
+            title="Permalink to this headline">¶</a>
+        </h1>
+        <p>
+          <a href="{{url_for('index')}}">Home</a> | 
+          <a href="{{url_for('session', session_id=session_id)}}">
+            Return to session page</a> |
+          <a href="{{url_for('results', session_id=session_id, exp_id=exp_id)}}">
+            Return to result page</a>
+        </p>
+
+        {% if qtls %}
+        <p>
+          Following is the list of QTLs found associated to this marker:
+        </p>
+        <table>
+          <tr>
+            {% for cell in headers %}
+              <th> 
+                {{ cell }}
+              </th>
+              {% endfor %}
+          </tr>
+          {% for row in qtls %}
+            <tr class="{{ loop.cycle('odd', 'even') }}">
+              {% for cell in row %}
+              <td> 
+                {% if cell|float %}
+                {{'%0.2f' % cell|float}}
+                {% else %}
+                {{ cell }}
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </table>
+        <p>
+          {{qtls |length}} QTLs found
+        </p>
+         
+      {% else %}
+          <p>
+              Sorry no QTLs were found associated with the marker &quot;{{ marker_id }}&quot;.
+          </p>
+      {% endif %}
+
+      </div>
+    </div>
+  </body>
+</html>
