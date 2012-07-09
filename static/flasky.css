@@ -108,3 +108,25 @@ a:hover tt {
 .flashes {
     color:blue;
 }
+
+
+table td {
+    vertical-align:top;
+    border-top: 1px solid white;
+}
+
+table tr td {
+    border-left: 1px solid black;
+    border-right: 1px;
+    text-align: right;
+    min-width: 80px;
+    font-size: 17px;
+}
+
+table tr th {
+    font-size: 16px;
+}
+
+.even {
+    background: #e6fddb;
+}
