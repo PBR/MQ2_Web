@@ -81,7 +81,7 @@ vis.add(pv.Rule)
   .anchor("left").add(pv.Label)
     .text(function(d) d.toFixed(1));
 
-var text = {{ qtls_lg }};
+var lg = {{ qtls_lg }};
 
 function text_position(input) {
   if(input % 2 == 0){
@@ -104,7 +104,7 @@ vis.add(pv.Rule)
     .left(function(d) d * w / {{ qtls_evo|length }} )
     .top(function() 30 + (text_position(this.index) * 7))
     .strokeStyle(function() text_color(this.index))
-    .text(function() text[this.index])
+    .text(function() lg[this.index])
     .textStyle(function() text_color(this.index))
     .add(pv.Label);
 
