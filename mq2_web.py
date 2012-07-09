@@ -360,6 +360,7 @@ def retrieve_qtl_infos(session_id, exp_id):
                 qtls_lg.append(row[1])
             mk_list.append(row[0])
             cnt = cnt + 1
+        stream.close()
     except IOError:
         print 'No output in folder %s' % folder
     return (qtls_evo, mk_list, qtls_lg, lg_index)
