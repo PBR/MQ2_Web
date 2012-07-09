@@ -110,12 +110,12 @@ a:hover tt {
 }
 
 
-table td {
+.markertable td {
     vertical-align:top;
     border-top: 1px solid white;
 }
 
-table tr td {
+.markertable tr td {
     border-left: 1px solid black;
     border-right: 1px;
     text-align: right;
@@ -123,7 +123,7 @@ table tr td {
     font-size: 17px;
 }
 
-table tr th {
+.markertable tr th {
     font-size: 16px;
 }
 
