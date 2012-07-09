@@ -311,6 +311,7 @@ def retrieve_marker_info(session_id, exp_id, marker_id):
                 for ind in to_remove:
                     row.remove(row[ind])
                 qtls.append(row)
+        stream.close()
     except IOError:
         print 'No output in folder %s' % folder
     return (headers, qtls)
