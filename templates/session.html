@@ -39,11 +39,13 @@
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}
+          {% autoescape off%}
             <ul class=flashes>
             {% for message in messages %}
               <li>{{ message }}</li>
             {% endfor %}
             </ul>
+          {% endautoescape %}
           {% endif %}
         {% endwith %}
 
@@ -65,6 +67,12 @@
         {% for exp_id in exp_ids|sort %}
           <li><a href="{{url_for('results',
             session_id=session_id, exp_id=exp_id)}}">{{ exp_id }}</a>
+            {% if '_s' in exp_id %}
+                session: {{ exp_id.rsplit('_s', 1)[1].rsplit('_t')[0] }}
+            {% endif %}
+            {% if '_t' in exp_id %}
+                threshold: {{ exp_id.rsplit('_t', 1)[1] }}
+            {% endif %}
           </li>
         {% endfor %}
         </ul>
