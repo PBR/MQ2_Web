@@ -48,7 +48,7 @@ class MQ2_WebTestCase(unittest.TestCase):
     def test_index_displays(self):
         """Checks that the index page displays correctly. """
         root = self.app.get('/')
-        self.assertTrue('<form method="POST" action="" '\
+        self.assertTrue('<form method="POST" action="." '\
         'enctype="multipart/form-data">' in root.data)
         self.assertTrue(root.status_code, 200)
 
@@ -141,6 +141,16 @@ class MQ2_WebTestCase(unittest.TestCase):
         self.assertTrue(post4.status_code, 200)
         self.assertTrue('<li>Experiment already run in experiment: ' in
             post4.data)
+
+        post5 = self.app.get('/session/%s/%s/marker/E36M48-330' % (session_id,
+                exp_id),
+                follow_redirects=True)
+
+        self.assertTrue(post5.status_code, 200)
+        self.assertTrue('MQ² results for marker E36M48-330' in post5.data)
+        self.assertTrue('2 QTLs found' in post5.data)
+        self.assertTrue('A_trait07' in post5.data)
+        self.assertTrue('A_trait11' in post5.data)
 
         upload_folder = CONFIG.get('mq2', 'upload_folder')
         shutil.rmtree(os.path.join(upload_folder, session_id))
