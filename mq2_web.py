@@ -265,7 +265,7 @@ def retrieve_exp_info(session_id, exp_id):
     except NoOptionError:
         mapqtl_session = None
     try:
-        exp_id = config.getint('Parameters', 'Experiment_ID')
+        exp_id = config.get('Parameters', 'Experiment_ID')
     except ValueError:
         exp_id = None
     except NoSectionError:
