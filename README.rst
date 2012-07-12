@@ -91,6 +91,20 @@ Then restart apache and you should be able to access the website on
 http://localhost/mq2
 
 
+Testing:
+--------
+
+This project contains unit-tests allowing you to check if your server
+has all the dependencies correctly set.
+
+To run them::
+
+ python tests.py
+
+Note that the unit-tests will fail if the ``upload_folder`` defined in
+``mq2.cfg`` is not writable for the user running the tests.
+
+
 Cleaning the upload folder:
 ---------------------------
 
