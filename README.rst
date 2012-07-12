@@ -47,31 +47,36 @@ Instruction to deploy this application is available on the
 
 Below is the approach I took to deploy the instance on a local machine.
 
-Retrieve 
+Retrieve
 the sources::
+
  cd /srv/
  git clone <repo>
  cd MQ2_Web
 
-Copy the 
+Copy the
 configuration file::
+
  cp mq2.cfg.sample mq2.cfg
 
 Adjust the configuration file (upload folder, secret key...)
 
 Don't forget to create the folder and set its right it you use a specific one,
 for example if you use ``/var/www/uploads`` as upload folder::
+
  sudo mkdir /var/www/uploads
  sudo chown apache:apache /var/www/uploads
 
 Then configure apache::
+
  sudo vim /etc/httd/conf.d/wsgi.conf
+
 and put in this file::
 
  WSGIScriptAlias /mq2 /var/www/wsgi/mq2.wsgi
  <Directory /var/www/wsgi/>
-     Order deny,allow
-     Allow from all
+    Order deny,allow
+    Allow from all
  </Directory>
 
 Then create the file /var/www/wsgi/mq2.wsgi with::
@@ -81,8 +86,29 @@ Then create the file /var/www/wsgi/mq2.wsgi with::
  
  import mq2_web
  application = mq2_web.APP
+
 Then restart apache and you should be able to access the website on
 http://localhost/mq2
+
+
+Cleaning the upload folder:
+---------------------------
+
+Within the sources of the project is a script called ``clean_uploads.py``
+which can be called from within a cron job to clean the upload directory
+and remove the session older than X days.
+
+This ``X`` is set at the top of the script and can be adjusted as desired.
+
+::
+
+ python clean_uploads.py --help
+ 
+provides more information about the
+options available for this script.
+
+Beware that this script requires the ``mq2.cfg`` file to be in the same
+directory as it is.
 
 
 License:
