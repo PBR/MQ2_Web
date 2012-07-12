@@ -48,7 +48,7 @@ class MQ2_WebTestCase(unittest.TestCase):
     def test_index_displays(self):
         """Checks that the index page displays correctly. """
         root = self.app.get('/')
-        self.assertTrue('<form method="POST" action="." '\
+        self.assertTrue('<form method="POST" action="/" '\
         'enctype="multipart/form-data">' in root.data)
         self.assertTrue(root.status_code, 200)
 
@@ -68,8 +68,12 @@ class MQ2_WebTestCase(unittest.TestCase):
                 session_id=session_id),
                 follow_redirects=True)
         self.assertTrue(post.status_code, 200)
-        self.assertTrue('<p> Session identifier: <span style="color:red">'
-            in post.data)
+        if session_id == 'A MQ² session identifier provided as example in the front page':
+            self.assertTrue('<li>This session does not exists</li>'
+                in post.data)
+        else:
+            self.assertTrue('<p> Session identifier: <span style="color:red">'
+                in post.data)
 
     def test_sample_data(self):
         """Checks that the form works to upload the demo dataset. """
