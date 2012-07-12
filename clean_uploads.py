@@ -184,7 +184,8 @@ def main():
             shutil.rmtree(filename)
         else:
             print 'To remove: %s' % filename
-
+    if options.test:
+        print '%s sessions to remove' % len(to_clean)
 
 if __name__ == '__main__':
     main()
