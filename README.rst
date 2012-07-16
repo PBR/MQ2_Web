@@ -125,6 +125,23 @@ Beware that this script requires the ``mq2.cfg`` file to be in the same
 directory as it is.
 
 
+Internet Explorer:
+------------------
+
+.. _protovis: http://mbostock.github.com/protovis/
+
+This project uses `protovis`_, a javascript plotting library relying on HTML5
+features to display the graphical output.
+
+This means that only recent browser are fully capable of visualizing the
+output.
+
+On Internet Explorer, only the version 9 will be supported. If you do encounter
+a problem with this browse, you might want to press the key ``F12`` and check
+that both the browser and the document mode are set to ``Internet Explorer 9``
+for the result page.
+
+
 License:
 --------
 
