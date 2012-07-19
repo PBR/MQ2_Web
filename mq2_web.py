@@ -33,9 +33,13 @@ hotspots.
 
 from flask import (Flask, render_template, request, redirect, url_for,
     flash, send_from_directory)
-from flaskext.wtf import (Form, FileField, file_required, TextField,
-    Required)
 from wtforms.validators import StopValidation
+try:
+    from flaskext.wtf import (Form, FileField, file_required, TextField,
+        Required)
+except ImportError:  # New version has a different namespace
+    from flask.ext.wtf import (Form, FileField, file_required, TextField,
+        Required)
 
 import ConfigParser
 import datetime
