@@ -21,6 +21,9 @@ Get this project:
 Source:  https://github.com/PBR/MQ2_Web
 
 
+Run it at: http://www.plantbreeding.wur.nl/mq2
+
+
 Dependencies:
 -------------
 .. _Flask: http://flask.pocoo.org/
