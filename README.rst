@@ -27,6 +27,7 @@ Dependencies:
 
 This project is a `Flask`_ application, as such it depends on:
 
+- python (2.5 minimum)
 - python-flask
 - python-flask-wtf
 - python-wtforms
