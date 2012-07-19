@@ -447,8 +447,9 @@ def write_down_config(folder, lod_threshold, mapqtl_session, exp_id):
     config.set('Parameters', 'MapQTL_session', mapqtl_session)
     config.set('Parameters', 'Experiment_ID', exp_id)
 
-    with open(os.path.join(folder, 'exp.cfg'), 'wb') as configfile:
-        config.write(configfile)
+    configfile =  open(os.path.join(folder, 'exp.cfg'), 'wb')
+    config.write(configfile)
+    configfile.close()
 
 
 ##  Web-app
