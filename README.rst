@@ -24,13 +24,16 @@ Source:  https://github.com/PBR/MQ2_Web
 Dependencies:
 -------------
 .. _Flask: http://flask.pocoo.org/
+.. _python-flask: http://flask.pocoo.org/
+.. _python-flask-wtf: http://packages.python.org/Flask-WTF/
+.. _python-wtforms: http://wtforms.simplecodes.com/docs/1.0.1/
 
 This project is a `Flask`_ application, as such it depends on:
 
 - python (2.5 minimum)
-- python-flask
-- python-flask-wtf
-- python-wtforms
+- `python-flask`_
+- `python-flask-wtf`_
+- `python-wtforms`_
 
 .. _MQ2: https://github.com/PBR/MQ2
 
