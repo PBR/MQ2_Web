@@ -34,6 +34,15 @@
           Results of the analysis ran on {{ date }}
         </p>
 
+        <!--[if lte IE 8]>
+            <p style="color:red">
+            You seem to run IE8 or an older version. This page might not
+            display correctly, please update to a newer browser or if you
+            are under IE 9 make sure that the document mode is on Internet
+            Explorer 9 using the 'F12' key.
+            </p>
+        <![endif]-->
+
         <h3> Pre-visualisation</h3>
         <div id="fig">
           {% if not max_qtls %}
