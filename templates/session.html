@@ -1,17 +1,10 @@
-<!DOCTYPE html>
+{% extends "master.html" %}
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>MQ² session overview</title>
-    
-    <link rel="stylesheet" type="text/css"
-        href="{{url_for('static', filename='flasky.css')}}" />
-  </head>
-  <body>
-    <div class="document">
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block body %}
       <div class="section" id="intro">
         <span id="id1"></span>
         <h1>MQ² session overview<a class="headerlink" href="#intro"
@@ -84,6 +77,4 @@
           files.
         </p>
       </div>
-    </div>
-  </body>
-</html>
+{% endblock %}

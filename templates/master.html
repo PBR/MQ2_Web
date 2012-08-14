@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>{% block title %}{% endblock %} - MQ²</title>
+
+    <link rel="meta" type="application/rdf+xml" title="FOAF" href="/BreeDB.rdf" />
+    <!-- meta information -->
+    <meta name="keywords"
+      content="MQ², MQ2, QTL mapping, QTL hotspots, Wageningen UR Plant Breeding, VLPB, Virtual lab of Plant Breeding" />
+    <meta rel="dc:description" name="description"
+      content="Research &amp; education for the CBSG and EU-SOL project of the expertise group Wageningen UR Plant Breeding." />
+    <meta name="reply-to" content="webmaster.plantbreeding@wur.nl" />
+    <meta about="http://www.plantbreeding.wur.nl" typeof="foaf:Organization"/>
+    <meta about="http://www.plantbreeding.wur.nl" property="foaf:homepage"
+      content="http://www.plantbreeding.wur.nl" datatype="xsd:anyURI"/>
+    <meta about="http://www.plantbreeding.wur.nl" property="foaf:topic_interest"
+      content="http://dbpedia.org/page/Plant_breeding" datatype="xsd:anyURI" />
+    <meta about="http://www.plantbreeding.wur.nl" property="foaf:phone"
+      content="0031317482836" datatype="xsd:string"/>
+    <meta about="http://www.plantbreeding.wur.nl" property="foaf:age"
+      datatype="xsd:integer" content="100"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="content-language" content="en" />
+    <meta rel="dc:subject" href="http://dbpedia.org/page/Plant_breeding" />
+    <meta rel="dc:creator" href="http://nl.linkedin.com/in/richardfinkers" />
+    <meta rel="dc:publisher" href="http://www.plantbreeding.wur.nl" />
+    <meta charset="UTF-8" />
+    <meta property="geo:lat_long" content="51.986869,5.665087"/>
+
+    {% block head %}
+    <link rel="stylesheet" type="text/css"
+        href="{{url_for('static', filename='flasky.css')}}" />
+    {% endblock %}
+    
+    <!--[if IE]>
+        <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  </head>
+  <body>
+      <a href="https://github.com/PBR/MQ2_Web" target="_blank">
+          <img style="position: absolute; top: 0; right: 0; border: 0;"
+          src="{{url_for('static', filename='Find_me_right_green.png')}}"
+          alt="Find me on GitHub" />
+      </a>
+    <div class="document">
+      <div class="section" id="intro">
+        <a href="http://www.wur.nl/UK/" target="_blank">
+            <img src="{{url_for('static', filename='Wageningen_logo.jpg')}}"
+                alt="Wageningen University" />
+    {% block body %}{% endblock %}
+    </div>
+  </body>
+</html>
+

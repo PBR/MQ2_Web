@@ -1,24 +1,12 @@
-<!DOCTYPE html>
+{% extends "master.html" %}
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>MQ² results</title>
-    
-    <link rel="stylesheet" type="text/css"
-        href="{{url_for('static', filename='flasky.css')}}" />
+{% block head %}
+    {{ super() }}
     <script type="text/javascript"
       src="{{url_for('static', filename='protovis-d3.1.js')}}"></script>
+{% endblock %}
 
-    <!--[if IE]>
-        <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <![endif]-->
-  </head>
-  <body>
-    <div class="document">
+{% block body %}
       <div class="section" id="intro">
         <span id="id1"></span>
         <h1>MQ² results<a class="headerlink" href="#intro"
@@ -219,6 +207,4 @@ vis.render();
             <span style="font-weight:bold;font-size:100%;">9</span>.
         </p>
     </div>
-    </div>
-  </body>
-</html>
+{% endblock %}
