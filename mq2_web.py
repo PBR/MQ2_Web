@@ -57,8 +57,8 @@ try:
 except:
     ZCOMPRESSION = zipfile.ZIP_STORED
 
-from MQ2 import (set_tmp_folder, extract_zip, MQ2Exception,
-    MQ2NoMatrixException, MQ2NoSuchSessionException)
+from MQ2 import (set_tmp_folder, extract_zip, get_matrix_dimensions,
+    MQ2Exception, MQ2NoMatrixException, MQ2NoSuchSessionException)
 from MQ2.generate_map_from_mapqtl import generate_map_from_mapqtl
 from MQ2.parse_mapqtl_file import parse_mapqtl_file
 from MQ2.add_marker_to_qtls import add_marker_to_qtls
@@ -276,9 +276,27 @@ def retrieve_exp_info(session_id, exp_id):
         exp_id = None
     except NoOptionError:
         exp_id = None
+    try:
+        n_markers = config.get('Parameters', 'Number of markers')
+    except ValueError:
+        n_markers = None
+    except NoSectionError:
+        n_markers = None
+    except NoOptionError:
+        n_markers = None
+    try:
+        n_traits = config.get('Parameters', 'Number of traits')
+    except ValueError:
+        n_traits = None
+    except NoSectionError:
+        n_traits = None
+    except NoOptionError:
+        n_traits = None
     return {'lod_threshold': lod_threshold,
             'mapqtl_session': mapqtl_session,
-            'experiment_id': exp_id}
+            'experiment_id': exp_id,
+            'n_markers': n_markers,
+            'n_traits': n_traits}
 
 
 def retrieve_marker_info(session_id, exp_id, marker_id):
@@ -391,10 +409,6 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
     if not os.path.exists(exp_folder):
         os.mkdir(exp_folder)
 
-    write_down_config(os.path.join(folder, exp_id),
-        lod_threshold,
-        mapqtl_session,
-        exp_id)
     tmp_folder = None
     no_matrix = False
     try:
@@ -415,6 +429,8 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
             print 'MQ2NoMatrixException: %s' % err
             no_matrix = err
 
+        (nline, ncol) = get_matrix_dimensions(os.path.join(
+            exp_folder, 'qtls_matrix.csv'))
         add_marker_to_qtls(qtlfile=os.path.join(exp_folder, 'qtls.csv'),
             mapfile=os.path.join(exp_folder, 'map.csv'),
             outputfile=os.path.join(exp_folder, 'qtls_with_mk.csv'))
@@ -431,8 +447,15 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
     if no_matrix is not False:
         raise MQ2NoMatrixException(no_matrix)
 
+    write_down_config(os.path.join(folder, exp_id),
+        lod_threshold,
+        mapqtl_session,
+        exp_id,
+        nline -2, ncol - 5)
 
-def write_down_config(folder, lod_threshold, mapqtl_session, exp_id):
+
+def write_down_config(folder, lod_threshold, mapqtl_session, exp_id,
+    n_markers, n_traits):
     """ Write down the configuration used in an experiment.
 
     @param folder the folder in which to write down this configuration.
@@ -440,12 +463,16 @@ def write_down_config(folder, lod_threshold, mapqtl_session, exp_id):
     significant for a QTL.
     @param mapqtl_session the MapQTL session/run from which to retrieve
     the QTLs.
+    @param n_markers the number of markers present in the dataset
+    @param n_traits the number of traits present in the dataset
     """
     config = ConfigParser.RawConfigParser()
     config.add_section('Parameters')
     config.set('Parameters', 'LOD_threshold', lod_threshold)
     config.set('Parameters', 'MapQTL_session', mapqtl_session)
     config.set('Parameters', 'Experiment_ID', exp_id)
+    config.set('Parameters', 'Number of markers', n_markers)
+    config.set('Parameters', 'Number of traits', n_traits)
 
     configfile =  open(os.path.join(folder, 'exp.cfg'), 'wb')
     config.write(configfile)
