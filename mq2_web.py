@@ -427,7 +427,7 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
                 qtl_matrixfile=os.path.join(exp_folder,
                     'qtls_matrix.csv'),
                 map_chart_file=os.path.join(exp_folder,
-                    'map_chart_file.map'))
+                    'MapChart.map'))
         except MQ2NoMatrixException, err:
             print 'MQ2NoMatrixException: %s' % err
             no_matrix = err

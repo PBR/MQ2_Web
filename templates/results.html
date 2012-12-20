@@ -192,12 +192,12 @@ vis.render();
             output and used to place the QTL in this experiment.
         </li>
         {% endif %}
-        {% if 'map_chart_file.map' in files %}
+        {% if 'MapChart.map' in files %}
         <li>
           <a href="{{url_for('retrieve',
             session_id=session_id, exp_id=exp_id,
-            filename='map_chart_file.map')}}">
-            map_chart_file.map</a> -- A map file compatible with
+            filename='MapChart.map')}}">
+            MapChart.map</a> -- A map file compatible with
             <a href="http://www.biometris.wur.nl/UK/Software/MapChart/">
             MapChart</a> for enhanced visualisation.
         </li>
