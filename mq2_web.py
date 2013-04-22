@@ -461,18 +461,14 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
                 sessionid=mapqtl_session,
                 outputfile=os.path.join(exp_folder, 'map.csv'))
 
-        try:
-            parse_mapqtl_file(inputfolder=tmp_folder,
-                sessionid=mapqtl_session,
-                lodthreshold=lod_threshold,
-                qtl_outputfile=os.path.join(exp_folder, 'qtls.csv'),
-                qtl_matrixfile=os.path.join(exp_folder,
-                    'qtls_matrix.csv'),
-                map_chart_file=os.path.join(exp_folder,
-                    'MapChart.map'))
-        except MQ2NoMatrixException, err:
-            print 'MQ2NoMatrixException: %s' % err
-            no_matrix = err
+        parse_mapqtl_file(inputfolder=tmp_folder,
+            sessionid=mapqtl_session,
+            lodthreshold=lod_threshold,
+            qtl_outputfile=os.path.join(exp_folder, 'qtls.csv'),
+            qtl_matrixfile=os.path.join(exp_folder,
+                'qtls_matrix.csv'),
+            map_chart_file=os.path.join(exp_folder,
+                'MapChart.map'))
 
         (nline, ncol) = get_matrix_dimensions(os.path.join(
             exp_folder, 'qtls_matrix.csv'))
@@ -483,6 +479,8 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
         add_qtl_to_map(qtlfile=os.path.join(exp_folder, 'qtls_with_mk.csv'),
             mapfile=os.path.join(exp_folder, 'map.csv'),
             outputfile=os.path.join(exp_folder, 'map_with_qtl.csv'))
+    except MQ2NoMatrixException, err:
+        no_matrix = err
     except MQ2NoSuchSessionException, err:
         shutil.rmtree(exp_folder)
         raise MQ2NoSuchSessionException(err)
