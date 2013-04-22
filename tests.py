@@ -87,7 +87,7 @@ class MQ2_WebTestCase(unittest.TestCase):
         self.assertTrue('<p> Session identifier: <span style="color:red">'
             in post.data)
 
-        motif = re.compile('\n(.*)</span></p>\n')
+        motif = re.compile('\n(.*)</span>\n\s+</p>\n')
         output = motif.search(post.data)
         session_id = output.group(1).strip()
 
@@ -111,7 +111,7 @@ class MQ2_WebTestCase(unittest.TestCase):
         self.assertTrue('<p> Session identifier: <span style="color:red">'
             in post.data)
 
-        motif = re.compile('\n(.*)</span></p>\n')
+        motif = re.compile('\n(.*)</span>\n\s+</p>\n')
         output = motif.search(post.data)
         session_id = output.group(1).strip()
 
