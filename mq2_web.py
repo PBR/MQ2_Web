@@ -480,6 +480,7 @@ def run_mq2(session_id, lod_threshold, mapqtl_session):
             mapfile=os.path.join(exp_folder, 'map.csv'),
             outputfile=os.path.join(exp_folder, 'map_with_qtl.csv'))
     except MQ2NoMatrixException, err:
+        shutil.rmtree(exp_folder)
         no_matrix = err
     except MQ2NoSuchSessionException, err:
         shutil.rmtree(exp_folder)
