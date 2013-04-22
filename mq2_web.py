@@ -656,6 +656,7 @@ def results(session_id, exp_id):
         data=data,
         qtls_lg=qtls_lg,
         lg_index=lg_index,
+        max_lod=max_lod,
         files=files)
 
 
