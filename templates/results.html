@@ -6,9 +6,9 @@
     {{ super() }}
     <script language="javascript" type="text/javascript"
         src="http://www.flotcharts.org/flot/jquery.js"></script>
-	<script language="javascript" type="text/javascript"
+    <script language="javascript" type="text/javascript"
         src="http://www.flotcharts.org/flot/jquery.flot.js"></script>
-	<script language="javascript" type="text/javascript"
+    <script language="javascript" type="text/javascript"
         src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
 
     <script type="text/javascript">
@@ -113,10 +113,11 @@
 
         <h3> Pre-visualisation</h3>
         <div id="fig">
+            <p> Number of QTLs for each marker on the map </p>
           <div class="demo-container">
             <div id="placeholder" class="demo-placeholder"></div>
-		  </div>
-          {% if not max_qtls %}
+          </div>
+          {% if not max_lod %}
           <p style="color:red">
             No QTLs were found for this data or with these parameters
           </p>
