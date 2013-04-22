@@ -35,8 +35,8 @@ from flask import (Flask, render_template, request, redirect, url_for,
     flash, send_from_directory)
 from wtforms.validators import StopValidation
 try:
-    from flaskext.wtf import (Form, FileField, file_required, TextField,
-        Required)
+    from flask.ext.wtf import (Form, FileField, file_required, TextField,
+        Required, SelectField)
 except ImportError:  # New version has a different namespace
     from flask.ext.wtf import (Form, FileField, file_required, TextField,
         Required)
@@ -157,8 +157,21 @@ class InputForm(Form):
     """
     lod_threshold = TextField("LOD Threshold",
         validators=[Required(), ValidateFloat()])
-    mapqtl_session = TextField("MapQTL session",
-        validators=[Required(), ValidateInt()])
+    mapqtl_session = SelectField("MapQTL session",
+        validators=[Required()], choices=[])
+
+    def __init__(self, *args, **kwargs):
+        """ Calls the default constructor with the normal arguments.
+        If sessions are provided as kwargs, use it to fill in the
+        choices of the select field.
+        """
+        super(InputForm, self).__init__(*args, **kwargs)
+        if 'sessions' in kwargs and kwargs['sessions']:
+            tmp = []
+            for session in kwargs['sessions']:
+                tmp.append((session, session))
+
+            self.mapqtl_session.choices = tmp
 
 
 ## Functions
@@ -388,6 +401,35 @@ def retrieve_qtl_infos(session_id, exp_id):
     return (qtls_evo, mk_list, qtls_lg, lg_index)
 
 
+def get_mapqtl_session(session_id):
+    """ Retrieve the list of MapQTL session available.
+
+    @param session_id the session identifier uniquely identifying the
+    MapQTL zip file and the JoinMap map file. The session identifier
+    also uniquely identifies the folder in which are the files uploaded.
+    """
+    folder = os.path.join(UPLOAD_FOLDER, session_id)
+    tmp_folder = None
+    sessions = []
+    try:
+        tmp_folder = set_tmp_folder()
+        extract_zip(os.path.join(folder, 'input.zip'), tmp_folder)
+        filelist = []
+        for root, dirs, files in os.walk(tmp_folder):
+            for filename in files:
+                if filename.startswith('Session') \
+                        and filename.endswith('.mqo'):
+                    session = filename.split()[1].strip()
+                    if session not in sessions:
+                        sessions.append(session)
+    except IOError, err:
+        raise MQ2NoSuchSessionException(err)
+    finally:
+        if tmp_folder and os.path.exists(tmp_folder):
+            shutil.rmtree(tmp_folder)
+    return sessions
+
+
 def run_mq2(session_id, lod_threshold, mapqtl_session):
     """ Run the scripts to extract the QTLs.
 
@@ -527,7 +569,12 @@ def session(session_id):
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
-    form = InputForm(csrf_enabled=False)
+    sessions=None
+    try:
+        sessions = get_mapqtl_session(session_id)
+    except MQ2Exception, err:
+        flash('err', 'errors')
+    form = InputForm(csrf_enabled=False, sessions=sessions)
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
