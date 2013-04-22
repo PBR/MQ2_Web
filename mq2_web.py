@@ -427,6 +427,7 @@ def get_mapqtl_session(session_id):
     finally:
         if tmp_folder and os.path.exists(tmp_folder):
             shutil.rmtree(tmp_folder)
+    sessions.sort()
     return sessions
 
 
