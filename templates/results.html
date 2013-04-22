@@ -4,8 +4,88 @@
 
 {% block head %}
     {{ super() }}
-    <script type="text/javascript"
-      src="{{url_for('static', filename='protovis-d3.1.js')}}"></script>
+    <script language="javascript" type="text/javascript"
+        src="http://www.flotcharts.org/flot/jquery.js"></script>
+	<script language="javascript" type="text/javascript"
+        src="http://www.flotcharts.org/flot/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript"
+        src="http://www.flotcharts.org/flot/jquery.flot.categories.js"></script>
+
+    <script type="text/javascript">
+{% autoescape off%}
+
+    var data = {{ data }};
+    var lg = {{ qtls_lg }}
+        lg_index = {{ lg_index }};
+
+
+    $(function() {
+        var plot = $.plot("#placeholder", data, {
+            series: {
+                bars: {
+                    show: true,
+                    barWidth: 0.5,
+                    align: "center"
+                },
+                clickable: true,
+                hoverable: true,
+            },
+            grid: { hoverable: true, clickable: true },
+            xaxis: {
+                mode: "categories",
+                points: { show: true },
+                lines: { show: true },
+                tickLength: 0,
+                show: false,
+            }
+        });
+
+        // show the tooltip
+        function showTooltip(x, y, contents) {
+            $('<div id="tooltip">' + contents + '</div>').css( {
+                position: 'absolute',
+                display: 'none',
+                top: y + 5,
+                left: x + 5,
+                border: '1px solid #fdd',
+                padding: '2px',
+                'background-color': '#fee',
+                opacity: 0.80
+            }).appendTo("body").fadeIn(200);
+        }
+
+        $("#placeholder").bind("plothover", function (event, pos, item) {
+            $("#x").text(pos.x);
+            $("#y").text(pos.y);
+
+            if (item) {
+                document.body.style.cursor = 'pointer';
+                $("#tooltip").remove();
+                var x = item.datapoint[0],
+                    y = item.datapoint[1];
+
+                if (item.series.label == 'QTLs found') {
+                    showTooltip(item.pageX, item.pageY,
+                            y + " " + item.series.label + " on " + data[0].data[item.dataIndex][0]);
+                } else {
+                    showTooltip(item.pageX, item.pageY,
+                            item.series.label + " " + lg[item.dataIndex]);
+                }
+            } else {
+                document.body.style.cursor = 'default';
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+        });
+
+        $("#placeholder").bind("plotclick", function (event, pos, item) {
+            if (item && item.series.label == 'QTLs found' ) {
+                self.location = '{{ url_for("marker_detail", session_id=session_id, exp_id=exp_id, marker_id="")}}' + data[0].data[item.dataIndex][0];
+            }
+        });
+    });
+{% endautoescape %}
+          </script>
 {% endblock %}
 
 {% block body %}
@@ -13,11 +93,11 @@
             title="Permalink to this headline">¶</a>
         </h1>
         <p>
-          <a href="{{url_for('index')}}">Home</a> | 
+          <a href="{{url_for('index')}}">Home</a> |
           <a href="{{url_for('session', session_id=session_id)}}">
             Return to session page</a>
         </p>
-        
+
         <p>
           Results of the analysis ran on {{ date }}
         </p>
@@ -33,88 +113,15 @@
 
         <h3> Pre-visualisation</h3>
         <div id="fig">
+          <div class="demo-container">
+            <div id="placeholder" class="demo-placeholder"></div>
+		  </div>
           {% if not max_qtls %}
           <p style="color:red">
             No QTLs were found for this data or with these parameters
           </p>
           {% endif %}
-          <script type="text/javascript+protovis" >
-{% autoescape off%}
 
-var data = {{ qtls_evo }}
-    mk_list = {{ mk_list }}
-    lg = {{ qtls_lg }};
-
-var w = 800,
-    h = 300,
-    x = pv.Scale.ordinal(pv.range({{ qtls_evo|length }})).splitBanded(0, w, 4/5),
-    y = pv.Scale.linear(0, {{ max_qtls }}).range(0, h);
-
-var vis = new pv.Panel()
-    .width(w)
-    .height(300)
-    .bottom(60)
-    .left(30)
-    .right(5)
-    .top(5);
-
-var bar = vis.add(pv.Bar)
-    .data(data)
-    .left(function() x(this.index))
-    .width(x.range().band)
-    .bottom(0)
-    .height(y)
-    .cursor("pointer")
-    .event("click", function() self.location = '{{ url_for("marker_detail", session_id=session_id, exp_id=exp_id, marker_id="")}}' + mk_list[this.index])
-    .event("mouseover", function() self.status = mk_list[this.index])
-    .title(function() mk_list[this.index]);
-
-var title = vis.add(pv.Label)
-    .left(w/2)
-    .top(5)
-    .textAlign("center")
-    .text("Number of QTLs for each marker on the map");
-
-vis.add(pv.Rule)
-    .data(y.ticks())
-    .bottom(function(d) Math.round(y(d)) - .5)
-    .strokeStyle(function(d) d ? "" : "#000")
-  .add(pv.Rule)
-    .left(0)
-    .width(5)
-    .strokeStyle("#000")
-  .anchor("left").add(pv.Label)
-    .text(function(d) d.toFixed(1));
-
-
-function text_position(input) {
-  if(input % 2 == 0){
-    return 1;
-  } else {
-    return -1;
-  }
-}
-
-function text_color(input) {
-  if(input % 2 == 0){
-    return '#b1b1b1';
-  } else {
-    return '#b1b1b1';
-  }
-}
-
-vis.add(pv.Rule)
-    .data({{ lg_index }})
-    .left(function(d) d * w / {{ qtls_evo|length }} )
-    .top(function() 30 + (text_position(this.index) * 7))
-    .strokeStyle(function() text_color(this.index))
-    .text(function() lg[this.index])
-    .textStyle(function() text_color(this.index))
-    .add(pv.Label);
-
-vis.render();
-{% endautoescape %}
-          </script>
         </div>
         <p>
           The parameters of the experiment were:
@@ -210,19 +217,4 @@ vis.render();
       </ul>
       {% endif %}
 
-    <div>
-        <p style="font-style:italic; font-size:80%;">
-            To visualize the results this page uses on <a href="http://mbostock.github.com/protovis/">protovis</a>
-            which relies on HTML5 technology, thus only recent web browsers
-            (IE9, Firefox 3.5.16 or above, Chrome or Safari) will be able
-            to display the graph correctly.
-        </p>
-        <p style="font-style:italic; font-size:80%;">
-            If you are under Internet Explorer 9 and this page is not
-            displayed correctly (there is no graph above), then press the
-            key <span style="font-weight:bold;font-size:100%;">F12</span> and make sure
-            that the document type is Internet Explorer
-            <span style="font-weight:bold;font-size:100%;">9</span>.
-        </p>
-    </div>
 {% endblock %}

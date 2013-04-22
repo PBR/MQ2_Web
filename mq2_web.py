@@ -620,18 +620,42 @@ def results(session_id, exp_id):
     infos = retrieve_exp_info(session_id, exp_id)
     (qtls_evo, mk_list, qtls_lg, lg_index) = retrieve_qtl_infos(
         session_id, exp_id)
-    qtls_evo = [float(it) for it in qtls_evo]
-    max_qtls = 0
-    if qtls_evo:
-        max_qtls = max(qtls_evo) + 2
+
+    cnt = 0
+    data_qtls = []
+    max_lod = 0
+    for entry in qtls_evo:
+        data_qtls.append([mk_list[cnt], float(entry)])
+        if float(entry) > max_lod:
+            max_lod = float(entry)
+        cnt += 1
+
+    cnt = 0
+    data_lg = []
+    for mk in mk_list:
+        if cnt in lg_index:
+            data_lg.append([mk, max_lod + 2])
+        cnt += 1
+
+    data = [
+        {"label": "QTLs found",
+         "data": data_qtls},
+        {"label": "Chr",
+         "data": data_lg}
+    ]
+
     date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
         exp_id[8:10], exp_id[10:12], exp_id[12:14])
     files = os.listdir(os.path.join(folder, exp_id))
     files.remove(u'exp.cfg')
+
     return render_template('results.html', session_id=session_id,
-        exp_id=exp_id, infos=infos, date=date,
-        qtls_evo=qtls_evo, mk_list=mk_list, max_qtls=max_qtls,
-        qtls_lg=qtls_lg, lg_index=lg_index,
+        exp_id=exp_id,
+        infos=infos,
+        date=date,
+        data=data,
+        qtls_lg=qtls_lg,
+        lg_index=lg_index,
         files=files)
 
 
