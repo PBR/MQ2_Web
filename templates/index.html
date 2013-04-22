@@ -35,7 +35,6 @@
 
 
 {% block body %}
-        </a>
         <h1>MQ²<a class="headerlink" href="#intro"
             title="Permalink to this headline">¶</a></h1>
         <p> MapQTL is a powerful tool to do QTL mapping. It allows you
@@ -75,6 +74,7 @@
         {% endfor %}
         </ul>
         {% endif %}
+
         <h4> Upload your files: </h4>
         <form method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
           <ul style="list-style-type: none;">
@@ -134,5 +134,4 @@
           <a href="http://www.plantbreeding.wur.nl/">Plant Breeding</a>
           at <a href="http://www.wur.nl/">Wageningen UR</a>.
         </p>
-      </div>
 {% endblock %}
