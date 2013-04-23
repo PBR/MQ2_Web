@@ -134,8 +134,8 @@ a:hover tt {
 .demo-container {
 	box-sizing: border-box;
 	width: 835px;
-	height: 365px;
-	padding: 20px 15px 15px 15px;
+	height: 325px;
+	padding: 10px 10px 15px 10px;
 	margin: 15px auto 30px auto;
 	border: 1px solid #ddd;
 	background: #fff;
