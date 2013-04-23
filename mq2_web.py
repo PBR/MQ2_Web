@@ -622,26 +622,44 @@ def results(session_id, exp_id):
         session_id, exp_id)
 
     cnt = 0
+    cnt_lg = 0
     data_qtls = []
     max_lod = 0
     for entry in qtls_evo:
+        if cnt in lg_index:
+            data_qtls.append([qtls_lg[cnt_lg], 0])
+            cnt_lg += 1
         data_qtls.append([mk_list[cnt], float(entry)])
         if float(entry) > max_lod:
             max_lod = float(entry)
         cnt += 1
 
     cnt = 0
+    cnt_lg = 0
     data_lg = []
     for mk in mk_list:
         if cnt in lg_index:
-            data_lg.append([mk, max_lod + 2])
+            data_lg.append([qtls_lg[cnt_lg], max_lod + 2])
+            cnt_lg += 1
         cnt += 1
 
     data = [
         {"label": "QTLs found",
-         "data": data_qtls},
+         "data": data_qtls,
+         "bars": {
+                "show": 1,
+                "barWidth": 0.5,
+                "order": 1,
+            },
+         },
         {"label": "Chr",
-         "data": data_lg}
+         "data": data_lg,
+         "bars": {
+                "show": 1,
+                "barWidth": 0.5,
+                "order": 2,
+            },
+         },
     ]
 
     date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
