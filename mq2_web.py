@@ -367,10 +367,13 @@ def retrieve_marker_info(session_id, exp_id, marker_id):
     the specified marker.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
+    infos = retrieve_exp_info(session_id, exp_id)
     qtls = []
     headers = []
     cnt = 0
-    to_remove = [1, 5, 5, 5, 5, 9]
+    to_remove = []
+    if 'plugin' in infos and infos['plugin'] == 'MapQTL plugin':
+        to_remove = [1, 5, 5, 5, 5, 9]
     try:
         stream = open('%s/qtls_with_mk.csv' % folder, 'r')
         for row in stream.readlines():
