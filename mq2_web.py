@@ -216,9 +216,13 @@ def experiment_done(session_id, lod_threshold, session):
     @param mapqtl_session the MapQTL session/run from which to retrieve
         the QTLs.
     """
+    try:
+        session = int(session)
+    except (ValueError, TypeError):
+        pass
     for exp in get_experiment_ids(session_id):
         infos = retrieve_exp_info(session_id, exp)
-        if infos['session'] == int(session) and \
+        if infos['session'] == session and \
             infos['lod_threshold'] == float(lod_threshold):
             return exp
     return False
@@ -600,7 +604,9 @@ def session(session_id):
 
     if form.validate_on_submit():
         lod_threshold = form.lod_threshold.data
-        session = form.session.data
+        session = None
+        if plugin.session_name:
+            session = form.session.data
         output = None
         try:
             output = mq2_run(session_id, plugin, folder,
