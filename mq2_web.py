@@ -195,21 +195,22 @@ def allowed_file(input_file):
     return output
 
 
-def experiment_done(session_id, lod_threshold, mapqtl_session):
+def experiment_done(session_id, lod_threshold, session):
     """ Check within a session if there is not already an existing
     experiment which used the same parameters.
 
     @param session_id the session identifier uniquely identifying the
-    MapQTL zip file and the JoinMap map file. The session identifier
-    also uniquely identifies the folder in which are the files uploaded.
+        MapQTL zip file and the JoinMap map file. The session identifier
+        also uniquely identifies the folder in which are the files
+        uploaded.
     @param lod_threshold the LOD threshold to use to consider a value
-    significant for a QTL.
+        significant for a QTL.
     @param mapqtl_session the MapQTL session/run from which to retrieve
-    the QTLs.
+        the QTLs.
     """
     for exp in get_experiment_ids(session_id):
         infos = retrieve_exp_info(session_id, exp)
-        if infos['mapqtl_session'] == int(mapqtl_session) and \
+        if infos['session'] == int(session) and \
             infos['lod_threshold'] == float(lod_threshold):
             return exp
     return False
@@ -275,13 +276,24 @@ def retrieve_exp_info(session_id, exp_id):
     except NoOptionError:
         lod_threshold = None
     try:
-        mapqtl_session = config.getint('Parameters', 'MapQTL_session')
+        session = config.getint('Parameters', 'session')
     except ValueError:
-        mapqtl_session = None
+        session = None
     except NoSectionError:
-        mapqtl_session = None
+        session = None
     except NoOptionError:
-        mapqtl_session = None
+        session = None
+    
+    if session is None:
+        try:
+            session = config.getint('Parameters', 'MapQTL_session')
+        except ValueError:
+            session = None
+        except NoSectionError:
+            session = None
+        except NoOptionError:
+            session = None
+    
     try:
         exp_id = config.get('Parameters', 'Experiment_ID')
     except ValueError:
@@ -290,6 +302,7 @@ def retrieve_exp_info(session_id, exp_id):
         exp_id = None
     except NoOptionError:
         exp_id = None
+
     try:
         n_markers = config.get('Parameters', 'Number of markers')
     except ValueError:
@@ -298,6 +311,7 @@ def retrieve_exp_info(session_id, exp_id):
         n_markers = None
     except NoOptionError:
         n_markers = None
+
     try:
         n_traits = config.get('Parameters', 'Number of traits')
     except ValueError:
@@ -306,11 +320,23 @@ def retrieve_exp_info(session_id, exp_id):
         n_traits = None
     except NoOptionError:
         n_traits = None
+
+    try:
+        plugin = config.get('Parameters', 'Plugin')
+    except ValueError:
+        plugin = None
+    except NoSectionError:
+        plugin = None
+    except NoOptionError:
+        plugin = None
+
+
     return {'lod_threshold': lod_threshold,
-            'mapqtl_session': mapqtl_session,
+            'session': session,
             'experiment_id': exp_id,
             'n_markers': n_markers,
-            'n_traits': n_traits}
+            'n_traits': n_traits,
+            'plugin': plugin}
 
 
 def retrieve_marker_info(session_id, exp_id, marker_id):
@@ -464,32 +490,35 @@ def mq2_run(session_id, plugin, folder, lod_threshold, session):
         shutil.rmtree(exp_folder)
         raise MQ2Exception(err)
 
-    write_down_config(os.path.join(upload_folder, exp_id),
-        lod_threshold,
-        session,
-        exp_id,
-        nline -2, ncol - 5)
+    write_down_config(folder=os.path.join(upload_folder, exp_id),
+                     lod_threshold=lod_threshold,
+                     session=session,
+                     exp_id=exp_id,
+                     plugin=plugin,
+                     n_markers=nline -2,
+                     n_traits=ncol - 5)
 
 
-def write_down_config(folder, lod_threshold, mapqtl_session, exp_id,
-    n_markers, n_traits):
+def write_down_config(folder, lod_threshold, session, exp_id,
+                      plugin, n_markers, n_traits):
     """ Write down the configuration used in an experiment.
 
     @param folder the folder in which to write down this configuration.
     @param lod_threshold the LOD threshold to use to consider a value
-    significant for a QTL.
+        significant for a QTL.
     @param mapqtl_session the MapQTL session/run from which to retrieve
-    the QTLs.
+        the QTLs.
     @param n_markers the number of markers present in the dataset
     @param n_traits the number of traits present in the dataset
     """
     config = ConfigParser.RawConfigParser()
     config.add_section('Parameters')
     config.set('Parameters', 'LOD_threshold', lod_threshold)
-    config.set('Parameters', 'MapQTL_session', mapqtl_session)
+    config.set('Parameters', 'session', session)
     config.set('Parameters', 'Experiment_ID', exp_id)
     config.set('Parameters', 'Number of markers', n_markers)
     config.set('Parameters', 'Number of traits', n_traits)
+    config.set('Parameters', 'Plugin', plugin.name)
 
     configfile =  open(os.path.join(folder, 'exp.cfg'), 'wb')
     config.write(configfile)
