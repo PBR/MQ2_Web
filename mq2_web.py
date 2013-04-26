@@ -151,10 +151,16 @@ class SessionForm(Form):
 
 class InputForm(Form):
     """ Form used to specify the arguments needed when extracting the
-    QTLs information from the MapQTL output.
+    QTLs information from the input.
     """
     lod_threshold = TextField("LOD Threshold",
         validators=[Required(), ValidateFloat()])
+
+
+class InputFormSession(InputForm):
+    """ Form used to specify the arguments needed when extracting the
+    QTLs information from the input.
+    """
     session = SelectField("MapQTL session",
         validators=[Required()], choices=[])
 
@@ -163,7 +169,7 @@ class InputForm(Form):
         If sessions are provided as kwargs, use it to fill in the
         choices of the select field.
         """
-        super(InputForm, self).__init__(*args, **kwargs)
+        super(InputFormSession, self).__init__(*args, **kwargs)
         if 'sessions' in kwargs and kwargs['sessions']:
             tmp = []
             for session in kwargs['sessions']:
@@ -171,8 +177,10 @@ class InputForm(Form):
 
             self.session.choices = tmp
 
-        if 'sessions_label' in kwargs and kwargs['sessions_label']:
-            self.session.label = kwargs['sessions_label']
+        if 'sessions_label' in kwargs:
+            if kwargs['sessions_label']:
+                self.session.label = kwargs['sessions_label']
+
 
 
 ## Functions
@@ -580,9 +588,12 @@ def session(session_id):
     plugin, folder = get_plugin_and_folder(
         inputzip=os.path.join(upload_folder, 'input.zip'))
     
-    form = InputForm(csrf_enabled=False,
-                     sessions=plugin.get_session_identifiers(folder),
-                     sessions_label=plugin.session_name)
+    if plugin.session_name:
+        form = InputFormSession(
+            sessions=plugin.get_session_identifiers(folder),
+            sessions_label=plugin.session_name)
+    else:
+        form = InputForm()
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
@@ -602,7 +613,8 @@ def session(session_id):
                 exp_id=output), output))
     exp_ids = get_experiment_ids(session_id)
     return render_template('session.html', session_id=session_id,
-        form=form, exp_ids=exp_ids)
+                           form=form, exp_ids=exp_ids,
+                           session=plugin.session_name)
 
 
 @APP.route('/session/<session_id>/<exp_id>/')
