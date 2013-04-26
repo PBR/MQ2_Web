@@ -50,7 +50,7 @@
         </ul>
         {% endif %}
         <form action="{{url_for('session', session_id=session_id)}}" method="POST" >
-          {{ form.mapqtl_session.label }} {{ form.mapqtl_session }}
+          {{ form.session.label }} {{ form.session }}
           {{ form.lod_threshold.label }} {{ form.lod_threshold }}
           <input type="submit" value="Submit">
         </form>

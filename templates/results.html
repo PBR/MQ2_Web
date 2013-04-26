@@ -167,12 +167,12 @@
             the map.
         </li>
         {% endif %}
-        {% if 'map_with_qtl.csv' in files %}
+        {% if 'map_with_qtls.csv' in files %}
         <li>
           <a href="{{url_for('retrieve',
             session_id=session_id, exp_id=exp_id,
-            filename='map_with_qtl.csv')}}">
-            map_with_qtl.csv</a> -- Representation of the map in
+            filename='map_with_qtls.csv')}}">
+            map_with_qtls.csv</a> -- Representation of the map in
             CSV with the number of QTLs found for each marker.
         </li>
         {% endif %}

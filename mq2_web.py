@@ -59,10 +59,8 @@ except:
 
 from MQ2 import (set_tmp_folder, extract_zip, get_matrix_dimensions,
     MQ2Exception, MQ2NoMatrixException, MQ2NoSuchSessionException)
-from MQ2.generate_map_from_mapqtl import generate_map_from_mapqtl
-from MQ2.parse_mapqtl_file import parse_mapqtl_file
-from MQ2.add_marker_to_qtls import add_marker_to_qtls
-from MQ2.add_qtl_to_map import add_qtl_to_map
+from MQ2.mq2 import get_plugin_and_folder, run_mq2
+
 
 
 CONFIG = ConfigParser.ConfigParser()
@@ -157,7 +155,7 @@ class InputForm(Form):
     """
     lod_threshold = TextField("LOD Threshold",
         validators=[Required(), ValidateFloat()])
-    mapqtl_session = SelectField("MapQTL session",
+    session = SelectField("MapQTL session",
         validators=[Required()], choices=[])
 
     def __init__(self, *args, **kwargs):
@@ -171,7 +169,10 @@ class InputForm(Form):
             for session in kwargs['sessions']:
                 tmp.append((session, session))
 
-            self.mapqtl_session.choices = tmp
+            self.session.choices = tmp
+
+        if 'sessions_label' in kwargs and kwargs['sessions_label']:
+            self.session.label = kwargs['sessions_label']
 
 
 ## Functions
@@ -357,19 +358,19 @@ def retrieve_qtl_infos(session_id, exp_id):
     the results of the experiment.
 
     @param session_id the session identifier uniquely identifying the
-    MapQTL zip file and the JoinMap map file. This is also the name of
-    the folder in which are the different experiment
+        MapQTL zip file and the JoinMap map file. This is also the name
+        of the folder in which are the different experiment
     @param exp_id the experiment identifier used to uniquely identify a
-    run which may have specific parameters.
+        run which may have specific parameters.
     @return a tuple containing four elements.
-    The first element is the qtls_evo list, containing for each marker
-    the number of QTLs found.
-    The second element is the mk_list, a list of all the markers on the
-    map.
-    The third element is the qtls_lg, a list of all the different
-    linkage group available.
-    The fourth element is the lg_index, a list of the position at which
-    the linkage group change.
+        The first element is the qtls_evo list, containing for each
+        marker the number of QTLs found.
+        The second element is the mk_list, a list of all the markers on
+        the map.
+        The third element is the qtls_lg, a list of all the different
+        linkage group available.
+        The fourth element is the lg_index, a list of the position at
+        which the linkage group change.
     """
     folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     qtls_evo = []
@@ -377,7 +378,7 @@ def retrieve_qtl_infos(session_id, exp_id):
     lg_index = []
     mk_list = []
     try:
-        stream = open('%s/map_with_qtl.csv' % folder, 'r')
+        stream = open('%s/map_with_qtls.csv' % folder, 'r')
         lg = None
         cnt = 0
         for row in stream.readlines():
@@ -431,70 +432,41 @@ def get_mapqtl_session(session_id):
     return sessions
 
 
-def run_mq2(session_id, lod_threshold, mapqtl_session):
+def mq2_run(session_id, plugin, folder, lod_threshold, session):
     """ Run the scripts to extract the QTLs.
 
-    @param session_id the session identifier uniquely identifying the
-    MapQTL zip file and the JoinMap map file. The session identifier
-    also uniquely identifies the folder in which are the files uploaded.
-    @param lod_threshold the LOD threshold to use to consider a value
-    significant for a QTL.
-    @param mapqtl_session the MapQTL session/run from which to retrieve
-    the QTLs.
+    :arg session_id: the session identifier uniquely identifying the
+        MapQTL zip file and the JoinMap map file. The session identifier
+        also uniquely identifies the folder in which are the files
+        uploaded.
+    :arg lod_threshold: the LOD threshold to use to consider a value
+        significant for a QTL.
+    :arg mapqtl_session: the MapQTL session/run from which to retrieve
+        the QTLs.
     """
-    folder = os.path.join(UPLOAD_FOLDER, session_id)
-    already_done = experiment_done(session_id, lod_threshold, mapqtl_session)
+    upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
+    already_done = experiment_done(session_id, lod_threshold, session)
     if already_done is not False:
         return already_done
-    exp_id = '%s_s%s_t%s' % (generate_exp_id(), mapqtl_session,
+    exp_id = '%s_s%s_t%s' % (generate_exp_id(), session,
         lod_threshold)
-    exp_folder = os.path.join(folder, exp_id)
+    exp_folder = os.path.join(upload_folder, exp_id)
     if not os.path.exists(exp_folder):
         os.mkdir(exp_folder)
 
-    tmp_folder = None
-    no_matrix = False
     try:
-        tmp_folder = set_tmp_folder()
-        extract_zip(os.path.join(folder, 'input.zip'), tmp_folder)
-
-        generate_map_from_mapqtl(inputfolder=tmp_folder,
-                sessionid=mapqtl_session,
-                outputfile=os.path.join(exp_folder, 'map.csv'))
-
-        parse_mapqtl_file(inputfolder=tmp_folder,
-            sessionid=mapqtl_session,
-            lodthreshold=lod_threshold,
-            qtl_outputfile=os.path.join(exp_folder, 'qtls.csv'),
-            qtl_matrixfile=os.path.join(exp_folder,
-                'qtls_matrix.csv'),
-            map_chart_file=os.path.join(exp_folder,
-                'MapChart.map'))
+        run_mq2(plugin, folder, lod_threshold=lod_threshold,
+                session=session, outputfolder=exp_folder)
 
         (nline, ncol) = get_matrix_dimensions(os.path.join(
             exp_folder, 'qtls_matrix.csv'))
-        add_marker_to_qtls(qtlfile=os.path.join(exp_folder, 'qtls.csv'),
-            mapfile=os.path.join(exp_folder, 'map.csv'),
-            outputfile=os.path.join(exp_folder, 'qtls_with_mk.csv'))
-
-        add_qtl_to_map(qtlfile=os.path.join(exp_folder, 'qtls_with_mk.csv'),
-            mapfile=os.path.join(exp_folder, 'map.csv'),
-            outputfile=os.path.join(exp_folder, 'map_with_qtl.csv'))
-    except MQ2NoMatrixException, err:
+    except MQ2Exception, err:
         shutil.rmtree(exp_folder)
-        no_matrix = err
-    except MQ2NoSuchSessionException, err:
-        shutil.rmtree(exp_folder)
-        raise MQ2NoSuchSessionException(err)
-    finally:
-        if tmp_folder and os.path.exists(tmp_folder):
-            shutil.rmtree(tmp_folder)
-    if no_matrix is not False:
-        raise MQ2NoMatrixException(no_matrix)
+        raise MQ2Exception(err)
 
-    write_down_config(os.path.join(folder, exp_id),
+    write_down_config(os.path.join(upload_folder, exp_id),
         lod_threshold,
-        mapqtl_session,
+        session,
         exp_id,
         nline -2, ncol - 5)
 
@@ -574,17 +546,25 @@ def session(session_id):
         sessions = get_mapqtl_session(session_id)
     except MQ2Exception, err:
         flash('err', 'errors')
-    form = InputForm(csrf_enabled=False, sessions=sessions)
+
+    upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
+    plugin, folder = get_plugin_and_folder(
+        inputzip=os.path.join(upload_folder, 'input.zip'))
+    
+    form = InputForm(csrf_enabled=False,
+                     sessions=plugin.get_session_identifiers(folder),
+                     sessions_label=plugin.session_name)
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
 
     if form.validate_on_submit():
         lod_threshold = form.lod_threshold.data
-        mapqtl_session = form.mapqtl_session.data
+        session = form.session.data
         output = None
         try:
-            output = run_mq2(session_id, lod_threshold, mapqtl_session)
+            output = mq2_run(session_id, plugin, folder,
+                             lod_threshold=lod_threshold, session=session)
         except MQ2Exception, err:
             form.errors['MQ2'] = err
         if output:
@@ -665,7 +645,7 @@ def results(session_id, exp_id):
     date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
         exp_id[8:10], exp_id[10:12], exp_id[12:14])
     files = os.listdir(os.path.join(folder, exp_id))
-    files.remove(u'exp.cfg')
+    #files.remove(u'exp.cfg')
 
     return render_template('results.html', session_id=session_id,
         exp_id=exp_id,
