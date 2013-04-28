@@ -137,7 +137,7 @@ class UploadForm(Form):
     """ Form used to upload the MapQTL output file and the JoinMap map
     file.
     """
-    mapqtl_input = FileField("MapQTL zip file",
+    mapqtl_input = FileField("Input zip files",
         validators=[file_required()])
 
 
