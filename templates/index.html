@@ -37,19 +37,25 @@
 {% block body %}
         <h1>MQ²<a class="headerlink" href="#intro"
             title="Permalink to this headline">¶</a></h1>
-        <p> MapQTL is a powerful tool to do QTL mapping. It allows you
-          to analyze multiple traits very quickly and in a user-friendly way.
+        <p> <a href="http://www.kyazma.nl/index.php/mc.MapQTL">MapQTL</a>
+          and <a href="http://www.rqtl.org/">R/qtl</a> are a powerful
+          tools to do QTL mapping.
+          They allow you to analyze quickly multiple traits, allowing
+          high-throughput QTL mapping.
           However, if you perform QTL mapping on a lot of traits, it is
-          hard to get an overview of the results.
+          hard to get an overview of the results. With MapQTL you can
+          visualize the results but only one trait at a time, with R/qtl
+          you need to have some basis of
+          <a href="http://www.r-project.org/">R</a> programming.
         </p>
         <p>
           MQ² aims at filling this need.
           Assuming one QTL per linkage group and using the LOD threshold
-          set by the user. It extracts all the QTLs detected by MapQTL
-          and using a map file, it finds the marker closest to the peak
-          and finally calculates the number of QTLs found near each
-          marker on the map. Note that this works for Interval mapping,
-          MQM or RQM mapping but not for KW mapping.
+          set by the user. It extracts all the QTLs detected by MapQTL,
+          R/qtl or any other QTL mapping tool, it finds the marker
+          closest to the peak and finally calculates the number of QTLs
+          found near each marker on the map. Note that this works for
+          Interval mapping, MQM or RQM mapping but not for KW mapping.
         </p>
         <p>
           This approach quickly allows you to find and visualize
@@ -85,8 +91,7 @@
               </a>
               <div id="helpZip">
                   <p style="color:green">
-                    A zip file containing all the *.mqo files in the MapQTL
-                    project directory that you want to analyze.
+                    A zip file containing the input files to analyze.
                   </p>
                 </div>
             </li>
@@ -122,9 +127,8 @@
             Example session</a></li>
         </ul>
         <h4> About the name: </h4>
-        <p> The aim of this tool is to visualize QTLs detected using
-          MapQTL. <br />
-          So, it is MapQTL to QTLs, <br />
+        <p> The aim of this tool is to visualize Mapped QTLs. <br />
+          So, it is Mapped QTLs to QTLs, <br />
           <span style="font-style:italic"> QTL * QTL = QTL²</span> <br />
           thus MQ².
         </p>
