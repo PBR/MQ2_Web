@@ -373,7 +373,7 @@ def retrieve_marker_info(session_id, exp_id, marker_id):
     cnt = 0
     to_remove = []
     if 'plugin' in infos and infos['plugin'] == 'MapQTL plugin':
-        to_remove = [1, 5, 5, 5, 5, 9]
+        to_remove = [5, 5, 5, 5, 9]
     try:
         stream = open('%s/qtls_with_mk.csv' % folder, 'r')
         for row in stream.readlines():
