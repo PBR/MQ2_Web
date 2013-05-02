@@ -675,6 +675,7 @@ def results(session_id, exp_id):
 
     data = [
         {"label": "QTLs found",
+         "color": "#1F77B4",
          "data": data_qtls,
          "bars": {
                 "show": 1,
@@ -683,10 +684,11 @@ def results(session_id, exp_id):
             },
          },
         {"label": "Chr",
+         "color": "#CDCDCD",
          "data": data_lg,
          "bars": {
                 "show": 1,
-                "barWidth": 0.5,
+                "barWidth": 0.1,
                 "order": 2,
             },
          },

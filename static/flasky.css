@@ -137,6 +137,7 @@ a:hover tt {
 	height: 325px;
 	padding: 10px 10px 15px 10px;
 	margin: 15px auto 30px auto;
+/*
 	border: 1px solid #ddd;
 	background: #fff;
 	background: linear-gradient(#f6f6f6 0, #fff 50px);
@@ -149,6 +150,7 @@ a:hover tt {
 	-ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 	-moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 	-webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+*/
 }
 
 .demo-placeholder {
