@@ -156,8 +156,8 @@
           <a href="{{url_for('retrieve',
             session_id=session_id, exp_id=exp_id,
             filename='qtls.csv')}}">
-            qtls.csv</a> -- List of all the QTLs found in
-            the MapQTL output.
+            qtls.csv</a> -- List of all the QTLs from the QTL analysis
+            output.
         </li>
         {% endif %}
         {% if 'qtls_with_mk.csv' in files %}
@@ -165,9 +165,8 @@
           <a href="{{url_for('retrieve',
             session_id=session_id, exp_id=exp_id,
             filename='qtls_with_mk.csv')}}">
-            qtls_with_mk.csv</a> -- List of all the QTLs found
-            in the MapQTL output with their closest marker on
-            the map.
+            qtls_with_mk.csv</a> -- List of all the QTLs from the QTL
+            analysis output with their closest marker on the map.
         </li>
         {% endif %}
         {% if 'map_with_qtls.csv' in files %}
@@ -185,7 +184,7 @@
             session_id=session_id, exp_id=exp_id,
             filename='qtls_matrix.csv')}}">
             qtls_matrix.csv</a> -- Matrix giving for each marker trait
-            combination the LOD values found by MapQTL.
+            combination the LOD values found by the QTL analysis.
         </li>
         {% endif %}
         {% if 'map.csv' in files %}
@@ -193,8 +192,8 @@
           <a href="{{url_for('retrieve',
             session_id=session_id, exp_id=exp_id,
             filename='map.csv')}}">
-            map.csv</a> -- The genetic map extracted from the MapQTL
-            output and used to place the QTL in this experiment.
+            map.csv</a> -- The genetic map extracted from the QTL
+            analysis output and used to place the QTL in this experiment.
         </li>
         {% endif %}
         {% if 'MapChart.map' in files %}
