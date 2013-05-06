@@ -679,7 +679,7 @@ def results(session_id, exp_id):
          "data": data_qtls,
          "bars": {
                 "show": 1,
-                "barWidth": 0.5,
+                "barWidth": 0.6,
                 "order": 1,
             },
          },
@@ -688,7 +688,7 @@ def results(session_id, exp_id):
          "data": data_lg,
          "bars": {
                 "show": 1,
-                "barWidth": 0.1,
+                "barWidth": 0.4,
                 "order": 2,
             },
          },
