@@ -6,6 +6,10 @@
     {{ super() }}
     <script language="javascript" type="text/javascript"
         src="http://www.flotcharts.org/flot/jquery.js"></script>
+    <!--[if lte IE 8]>
+    <script language="javascript" type="text/javascript"
+        src="http://www.flotcharts.org/flot/excanvas.min.js"></script>
+    <![endif]-->
     <script language="javascript" type="text/javascript"
         src="http://www.flotcharts.org/flot/jquery.flot.js"></script>
     <script language="javascript" type="text/javascript"
@@ -19,7 +23,7 @@
         lg_index = {{ lg_index }};
 
 
-    $(document).ready(function() {
+    $(function() {
         var plot = $.plot("#placeholder", data, {
             series: {
                 clickable: true,
@@ -96,9 +100,9 @@
           Results of the analysis ran on {{ date }}
         </p>
 
-        <!--[if lte IE 8]>
+        <!--[if lte IE 7]>
             <p style="color:red">
-            You seem to run IE8 or an older version. This page might not
+            You seem to run IE7 or an older version. This page might not
             display correctly, please update to a newer browser or if you
             are under IE 9 make sure that the document mode is on Internet
             Explorer 9 using the 'F12' key.
