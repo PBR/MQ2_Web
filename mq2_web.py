@@ -597,7 +597,7 @@ def session(session_id):
     
     if plugin.session_name:
         form = InputFormSession(
-            sessions=plugin.get_session_identifiers(folder),
+            sessions=sorted(plugin.get_session_identifiers(folder)),
             sessions_label=plugin.session_name)
     else:
         form = InputForm()
