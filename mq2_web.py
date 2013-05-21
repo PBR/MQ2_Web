@@ -773,5 +773,8 @@ def retrieve(session_id, exp_id, filename):
 
 
 if __name__ == '__main__':
+    import logging
+    LOG = logging.getLogger('MQ2')
+    LOG.setLevel(logging.DEBUG)
     APP.debug = True
     APP.run()
