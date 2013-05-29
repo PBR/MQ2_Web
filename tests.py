@@ -35,7 +35,7 @@ import unittest
 from mq2_web import APP, CONFIG
 
 TEST_INPUT = os.path.join(os.path.dirname(
-    os.path.abspath(__file__)), 'static/Demoset.zip')
+    os.path.abspath(__file__)), 'static/Demoset_mapqtl.zip')
 
 class MQ2_WebTestCase(unittest.TestCase):
     """ Test the web interface for MQ2. """
@@ -58,7 +58,7 @@ class MQ2_WebTestCase(unittest.TestCase):
                 session_id='wrong identifier'),
                 follow_redirects=True)
         self.assertTrue(post.status_code, 200)
-        self.assertTrue('<li>This session does not exists</li>'
+        self.assertTrue('<li>Could not extract the zip archive.</li>'
             in post.data)
 
     def test_sample_session(self):
@@ -102,6 +102,7 @@ class MQ2_WebTestCase(unittest.TestCase):
 
     def test_experiment(self):
         """Checks that the form works for an experiment. """
+        # Upload input
         stream = open(TEST_INPUT)
         post = self.app.post('/', data=dict(
                 mapqtl_input=stream),
@@ -115,8 +116,9 @@ class MQ2_WebTestCase(unittest.TestCase):
         output = motif.search(post.data)
         session_id = output.group(1).strip()
 
+        # Give threshold and session
         post2 = self.app.post('/session/%s/' % session_id,
-                data=dict(lod_threshold=3, mapqtl_session=2),
+                data=dict(lod_threshold=3, session=2),
                 follow_redirects=True)
         self.assertTrue(post2.status_code, 200)
 
@@ -126,6 +128,7 @@ class MQ2_WebTestCase(unittest.TestCase):
         self.assertTrue('<p> Session identifier: <span style="color:red">'
             in post2.data)
 
+        # Check results
         post3 = self.app.get('/session/%s/%s/' % (session_id, exp_id),
                 follow_redirects=True)
 
@@ -134,13 +137,11 @@ class MQ2_WebTestCase(unittest.TestCase):
             in post3.data)
         self.assertTrue('map.csv</a> -- The genetic map extracted'
             in post3.data)
-        self.assertTrue('map_with_qtl.csv</a> -- Representation'
-            in post3.data)
-        self.assertTrue('<script type="text/javascript+protovis" >'
+        self.assertTrue('map_with_qtls.csv</a> -- Representation'
             in post3.data)
 
         post4 = self.app.post('/session/%s/' % session_id,
-                data=dict(lod_threshold=3, mapqtl_session=2),
+                data=dict(lod_threshold=3, session=2),
                 follow_redirects=True)
         self.assertTrue(post4.status_code, 200)
         self.assertTrue('<li>Experiment already run in experiment: ' in
