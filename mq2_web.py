@@ -585,23 +585,28 @@ def session(session_id):
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
         request.remote_addr, request.url)
-    sessions=None
-    try:
-        sessions = get_mapqtl_session(session_id)
-    except MQ2Exception, err:
-        flash('err', 'errors')
 
+    if session_id == CONFIG.get('mq2', 'sample_session'):
+        global UPLOAD_FOLDER
+        UPLOAD_FOLDER = os.path.join(os.path.abspath(__file__),
+                                     APP.static_folder)
     upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
-    plugin, folder = get_plugin_and_folder(
-        inputzip=os.path.join(upload_folder, 'input.zip'))
-    
+
+    try:
+        plugin, folder = get_plugin_and_folder(
+            inputzip=os.path.join(upload_folder, 'input.zip'))
+    except IOError:
+        flash('Could not extract the zip archive.', 'errors')
+        return redirect(url_for('index'))
+
     if plugin.session_name:
         form = InputFormSession(
             sessions=sorted(plugin.get_session_identifiers(folder)),
             sessions_label=plugin.session_name)
     else:
         form = InputForm()
-    if not session_id in os.listdir(UPLOAD_FOLDER):
+    if not (session_id in os.listdir(UPLOAD_FOLDER) or
+            session_id in os.listdir(APP.static_folder)):
         flash('This session does not exists')
         return redirect(url_for('index'))
 
