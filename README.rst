@@ -99,6 +99,18 @@ Then restart apache and you should be able to access the website on
 http://localhost/mq2
 
 
+Set the demo session:
+---------------------
+
+The configuration file contains the name of a ``sample_session`` which is
+presented in the index page of the project to show what MQ² can do.
+
+Create your own sample session by creating a folder in the ``static``
+folder of MQ²_Web. Place on this folder the dataset you want to have in
+your sample session (name it ``input.zip``) and set in the configuration
+file the name of the directory you created.
+
+
 Testing:
 --------
 
