@@ -286,7 +286,7 @@ def retrieve_exp_info(session_id, exp_id):
     except NoOptionError:
         lod_threshold = None
     try:
-        session = config.getint('Parameters', 'session')
+        session = config.get('Parameters', 'session')
     except ValueError:
         session = None
     except NoSectionError:
