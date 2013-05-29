@@ -729,7 +729,11 @@ def marker_detail(session_id, exp_id, marker_id):
     @param marker_id the name of the marker to zoom on.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
-        request.remote_addr, request.url)
+                                  request.remote_addr, request.url)
+    if session_id == CONFIG.get('mq2', 'sample_session'):
+        global UPLOAD_FOLDER
+        UPLOAD_FOLDER = os.path.join(os.path.abspath(__file__),
+                                     APP.static_folder)
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
@@ -755,7 +759,11 @@ def retrieve(session_id, exp_id, filename):
     @param filename the name of the file to retrieve within this session.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
-        request.remote_addr, request.url)
+                                  request.remote_addr, request.url)
+    if session_id == CONFIG.get('mq2', 'sample_session'):
+        global UPLOAD_FOLDER
+        UPLOAD_FOLDER = os.path.join(os.path.abspath(__file__),
+                                     APP.static_folder)
     upload_folder = os.path.join(UPLOAD_FOLDER, session_id, exp_id)
     if filename != '%s.zip' % exp_id:
         return send_from_directory(upload_folder, filename)
