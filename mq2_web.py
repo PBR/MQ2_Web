@@ -32,14 +32,14 @@ hotspots.
 """
 
 from flask import (Flask, render_template, request, redirect, url_for,
-    flash, send_from_directory)
+                   flash, send_from_directory)
 from wtforms.validators import StopValidation
 try:
     from flask.ext.wtf import (Form, FileField, file_required, TextField,
-        Required, SelectField)
+                               Required, SelectField)
 except ImportError:  # New version has a different namespace
     from flask.ext.wtf import (Form, FileField, file_required, TextField,
-        Required)
+                               Required)
 
 import ConfigParser
 import datetime
@@ -58,22 +58,22 @@ except:
     ZCOMPRESSION = zipfile.ZIP_STORED
 
 from MQ2 import (set_tmp_folder, extract_zip, get_matrix_dimensions,
-    MQ2Exception, MQ2NoMatrixException, MQ2NoSuchSessionException)
+                 MQ2Exception, MQ2NoMatrixException,
+                 MQ2NoSuchSessionException)
 from MQ2.mq2 import get_plugin_and_folder, run_mq2
-
 
 
 CONFIG = ConfigParser.ConfigParser()
 CONFIG.readfp(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-    'mq2.cfg')))
+              'mq2.cfg')))
 # folder where the files can be uploaded
 UPLOAD_FOLDER = CONFIG.get('mq2', 'upload_folder')
 # Extension allowed for file to upload
 ALLOWED_EXTENSIONS = set(item.strip() for item in CONFIG.get('mq2',
-    'allowed_extensions').split(','))
+                         'allowed_extensions').split(','))
 # Mimetype allowed for file to upload
 ALLOWED_MIMETYPES = set(item.strip() for item in CONFIG.get('mq2',
-    'allows_mimetypes').split(','))
+                        'allows_mimetypes').split(','))
 
 # Create the application.
 APP = Flask(__name__)
@@ -138,7 +138,7 @@ class UploadForm(Form):
     file.
     """
     mapqtl_input = FileField("Input zip files",
-        validators=[file_required()])
+                             validators=[file_required()])
 
 
 class SessionForm(Form):
@@ -146,7 +146,7 @@ class SessionForm(Form):
     to this specific session.
     """
     session_id = TextField("Session identifier",
-        validators=[Required()])
+                           validators=[Required()])
 
 
 class InputForm(Form):
@@ -154,7 +154,7 @@ class InputForm(Form):
     QTLs information from the input.
     """
     lod_threshold = TextField("LOD Threshold",
-        validators=[Required(), ValidateFloat()])
+                              validators=[Required(), ValidateFloat()])
 
 
 class InputFormSession(InputForm):
@@ -162,7 +162,7 @@ class InputFormSession(InputForm):
     QTLs information from the input.
     """
     session = SelectField("MapQTL session",
-        validators=[Required()], choices=[])
+                          validators=[Required()], choices=[])
 
     def __init__(self, *args, **kwargs):
         """ Calls the default constructor with the normal arguments.
@@ -182,9 +182,7 @@ class InputFormSession(InputForm):
                 self.session.label = kwargs['sessions_label']
 
 
-
 ## Functions
-
 
 def allowed_file(input_file):
     """ Validate the uploaded file.
@@ -223,7 +221,7 @@ def experiment_done(session_id, lod_threshold, session):
     for exp in get_experiment_ids(session_id):
         infos = retrieve_exp_info(session_id, exp)
         if infos['session'] == session and \
-            infos['lod_threshold'] == float(lod_threshold):
+                infos['lod_threshold'] == float(lod_threshold):
             return exp
     return False
 
@@ -263,7 +261,7 @@ def get_experiment_ids(session_id):
     exp_ids = []
     for filename in os.listdir(folder):
         if os.path.isdir(os.path.join(folder, filename)) \
-            and filename.startswith('20'):
+                and filename.startswith('20'):
             exp_ids.append(filename)
     return exp_ids
 
@@ -295,7 +293,7 @@ def retrieve_exp_info(session_id, exp_id):
         session = None
     except NoOptionError:
         session = None
-    
+
     if session is None:
         try:
             session = config.getint('Parameters', 'MapQTL_session')
@@ -305,7 +303,7 @@ def retrieve_exp_info(session_id, exp_id):
             session = None
         except NoOptionError:
             session = None
-    
+
     try:
         exp_id = config.get('Parameters', 'Experiment_ID')
     except ValueError:
@@ -341,7 +339,6 @@ def retrieve_exp_info(session_id, exp_id):
         plugin = None
     except NoOptionError:
         plugin = None
-
 
     return {'lod_threshold': lod_threshold,
             'session': session,
@@ -490,7 +487,7 @@ def mq2_run(session_id, plugin, folder, lod_threshold, session):
     if already_done is not False:
         return already_done
     exp_id = '%s_s%s_t%s' % (generate_exp_id(), session,
-        lod_threshold)
+                             lod_threshold)
     exp_folder = os.path.join(upload_folder, exp_id)
     if not os.path.exists(exp_folder):
         os.mkdir(exp_folder)
@@ -506,12 +503,12 @@ def mq2_run(session_id, plugin, folder, lod_threshold, session):
         raise MQ2Exception(err)
 
     write_down_config(folder=os.path.join(upload_folder, exp_id),
-                     lod_threshold=lod_threshold,
-                     session=session,
-                     exp_id=exp_id,
-                     plugin=plugin,
-                     n_markers=nline -2,
-                     n_traits=ncol - 5)
+                      lod_threshold=lod_threshold,
+                      session=session,
+                      exp_id=exp_id,
+                      plugin=plugin,
+                      n_markers=nline - 2,
+                      n_traits=ncol - 5)
 
 
 def write_down_config(folder, lod_threshold, session, exp_id,
@@ -535,7 +532,7 @@ def write_down_config(folder, lod_threshold, session, exp_id,
     config.set('Parameters', 'Number of traits', n_traits)
     config.set('Parameters', 'Plugin', plugin.name)
 
-    configfile =  open(os.path.join(folder, 'exp.cfg'), 'wb')
+    configfile = open(os.path.join(folder, 'exp.cfg'), 'wb')
     config.write(configfile)
     configfile.close()
 
@@ -550,12 +547,12 @@ def index():
     to upload his file and find back his session.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
-        request.remote_addr, request.url)
+                                  request.remote_addr, request.url)
     form = UploadForm(csrf_enabled=False)
     session_form = SessionForm(csrf_enabled=False)
     if session_form.validate_on_submit()and session_form.session_id.data:
         return redirect(url_for('session',
-            session_id=session_form.session_id.data))
+                        session_id=session_form.session_id.data))
     if form.validate_on_submit():
         upload_file = request.files['mapqtl_input']
         if upload_file and allowed_file(upload_file):
@@ -563,11 +560,13 @@ def index():
             upload_folder = os.path.join(UPLOAD_FOLDER, session_id)
             os.mkdir(upload_folder)
             upload_file.save(os.path.join(upload_folder,
-                'input.zip'))
+                             'input.zip'))
             return redirect(url_for('session', session_id=session_id))
         else:
             flash('Wrong file type or name.')
-    return render_template('index.html', form=form,
+    return render_template(
+        'index.html',
+        form=form,
         session_form=session_form,
         sample_session=CONFIG.get('mq2', 'sample_session'))
 
@@ -584,7 +583,7 @@ def session(session_id):
     MapQTL zip file and the JoinMap map file.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
-        request.remote_addr, request.url)
+                                  request.remote_addr, request.url)
 
     if session_id == CONFIG.get('mq2', 'sample_session'):
         global UPLOAD_FOLDER
@@ -622,9 +621,9 @@ def session(session_id):
         except MQ2Exception, err:
             form.errors['MQ2'] = err
         if output:
-            flash("Experiment already run in experiment: <a href='%s'>" \
-                "%s</a>" % (url_for('results', session_id=session_id,
-                exp_id=output), output))
+            flash("Experiment already run in experiment: <a href='%s'>"
+                  "%s</a>" % (url_for('results', session_id=session_id,
+                  exp_id=output), output))
     exp_ids = get_experiment_ids(session_id)
     return render_template('session.html', session_id=session_id,
                            form=form, exp_ids=exp_ids,
@@ -644,7 +643,7 @@ def results(session_id, exp_id):
     run which may have specific parameters.
     """
     print 'mq2 %s -- %s -- %s' % (datetime.datetime.now(),
-        request.remote_addr, request.url)
+                                  request.remote_addr, request.url)
     if not session_id in os.listdir(UPLOAD_FOLDER):
         flash('This session does not exists')
         return redirect(url_for('index'))
@@ -682,29 +681,31 @@ def results(session_id, exp_id):
         {"label": "QTLs found",
          "color": "#1F77B4",
          "data": data_qtls,
-         "bars": {
-                "show": 1,
-                "barWidth": 0.8,
-                "order": 1,
-            },
+         "bars": {"show": 1,
+                  "barWidth": 0.8,
+                  "order": 1,
+                  },
          },
         {"label": "Chr",
          "color": "#CDCDCD",
          "data": data_lg,
-         "bars": {
-                "show": 1,
-                "barWidth": 0.4,
-                "order": 2,
-            },
+         "bars": {"show": 1,
+                  "barWidth": 0.4,
+                  "order": 2,
+                  },
          },
     ]
 
-    date = '%s-%s-%s at %s:%s:%s' % (exp_id[:4], exp_id[4:6], exp_id[6:8],
-        exp_id[8:10], exp_id[10:12], exp_id[12:14])
+    date = '%s-%s-%s at %s:%s:%s' % (
+        exp_id[:4], exp_id[4:6], exp_id[6:8],
+        exp_id[8:10], exp_id[10:12], exp_id[12:14]
+    )
     files = os.listdir(os.path.join(folder, exp_id))
     #files.remove(u'exp.cfg')
 
-    return render_template('results.html', session_id=session_id,
+    return render_template(
+        'results.html',
+        session_id=session_id,
         exp_id=exp_id,
         infos=infos,
         date=date,
@@ -742,8 +743,13 @@ def marker_detail(session_id, exp_id, marker_id):
         flash('This experiment does not exists')
         return redirect(url_for('session', session_id=session_id))
     (headers, qtls) = retrieve_marker_info(session_id, exp_id, marker_id)
-    return render_template('markers.html', session_id=session_id,
-        exp_id=exp_id, marker_id=marker_id, headers=headers, qtls=qtls)
+    return render_template(
+        'markers.html',
+        session_id=session_id,
+        exp_id=exp_id,
+        marker_id=marker_id,
+        headers=headers,
+        qtls=qtls)
 
 
 @APP.route('/retrieve/<session_id>/<exp_id>/<filename>')
@@ -771,13 +777,13 @@ def retrieve(session_id, exp_id, filename):
         if os.path.exists(os.path.join(upload_folder, '%s.zip' % exp_id)):
             return send_from_directory(upload_folder, '%s.zip' % exp_id)
         zf = zipfile.ZipFile(os.path.join(upload_folder, '%s.zip' % exp_id),
-            mode='w')
+                             mode='w')
         try:
             for filename in os.listdir(upload_folder):
                 if not filename.endswith('.zip'):
                     zf.write(os.path.join(upload_folder, filename),
-                        arcname=os.path.join(exp_id, filename),
-                        compress_type=ZCOMPRESSION)
+                             arcname=os.path.join(exp_id, filename),
+                             compress_type=ZCOMPRESSION)
         except IOError, err:
             print 'ERROR while generating the zip file: %s' % err
         finally:
