@@ -381,7 +381,7 @@ def retrieve_marker_info(session_id, exp_id, marker_id):
                 headers = row
                 cnt = cnt + 1
                 continue
-            if row[-1] == marker_id:
+            if row[-3] == marker_id:
                 for ind in to_remove:
                     row.remove(row[ind])
                 qtls.append(row)
